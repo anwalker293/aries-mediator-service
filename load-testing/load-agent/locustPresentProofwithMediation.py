@@ -8,30 +8,11 @@ import fcntl
 import os
 import signal
 
-# Debugging
-import logging
-
-logger = logging.getLogger('simple_example')
-logger.setLevel(logging.INFO)
-# create console handler and set level to debug
-ch = logging.StreamHandler()
-ch.setLevel(logging.INFO)
-
-# create formatter
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-
-# add formatter to ch
-ch.setFormatter(formatter)
-
-# add ch to logger
-logger.addHandler(ch)
-
 class CustomLocust(User):
     abstract = True
     def __init__(self, *args, **kwargs):
         super().__init__(*args,**kwargs)
         self.client = CustomClient(self.host)
-        
 
 class UserBehaviour(SequentialTaskSet):
     def on_start(self):
@@ -43,21 +24,13 @@ class UserBehaviour(SequentialTaskSet):
     @task
     def get_invite(self):
         invite = self.client.issuer_getinvite()
-        logger.info("get_invite")
-        logger.info("Invite YOOO")
-        logger.info(invite)
         self.invite = invite
 
     @task
     def accept_invite(self):
         self.client.ensure_is_running()
-        
-        logger.info("Here's the invite: ")
-        logger.info(self.invite['invitation_url'])
-        try:
-            connection = self.client.accept_invite(self.invite['invitation_url'], logger=logger)
-        except Exception:
-            raise Exception("nah")
+
+        connection = self.client.accept_invite(self.invite['invitation_url'])
         self.connection = connection
 
     @task
