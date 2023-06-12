@@ -303,11 +303,8 @@ class CustomClient:
                     "nonce": "1",
                     "requested_attributes": {
                         str(uuid4()): {
-                            "name": "name"
-                        },
-                        str(uuid4()): {
-                            "name": "value"
-                        },
+                            "name": "score"
+                        }
                     },
                     "requested_predicates": {}, 
                     "version": "1.0"
