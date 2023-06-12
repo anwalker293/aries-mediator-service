@@ -12,6 +12,8 @@ from gevent import subprocess
 from gevent import select
 from gevent import lock as gevent_lock
 
+from uuid import uuid4
+
 SHUTDOWN_TIMEOUT_SECONDS=10
 READ_TIMEOUT_SECONDS=120
 ERRORS_BEFORE_RESTART=10
@@ -267,6 +269,53 @@ class CustomClient:
             },
             headers=headers
             )
+        if r.status_code != 200:
+            raise Exception(r.content)
+            
+        r = r.json()
+
+        line = self.readjsonline()
+
+        return r
+
+    @stopwatch
+    def presentation_exchange(self, connection_id):
+        self.run_command({"cmd":"presentationExchange"})
+
+        # From verification side
+        # TO DO: Change "issuer" everywhere to more general "ACA-Py"
+        headers = json.loads(os.getenv('ISSUER_HEADERS')) # headers same
+        headers['Content-Type'] = 'application/json'
+
+        verifier_did = os.getenv('CRED_DEF').split(':')[0]
+        schema_parts = os.getenv('SCHEMA').split(':')
+
+        # Might need to change nonce
+        # TO DO: Generalize schema parts
+        r = requests.post(
+            os.getenv('ISSUER_URL') + '/present-proof/send-request', 
+            json={
+                "auto_verify": True,
+                "comment": "Performance Verification",
+                "connection_id": connection_id,
+                "proof_request": {
+                    "name": "Proof for AFJ Perf",
+                    "nonce": "1",
+                    "requested_attributes": {
+                        str(uuid4()): {
+                            "name": "name"
+                        },
+                        str(uuid4()): {
+                            "name": "value"
+                        },
+                    },
+                    "requested_predicates": {}, 
+                    "version": "1.0"
+                },
+                "trace": True 
+            }, 
+            headers=headers)
+
         if r.status_code != 200:
             raise Exception(r.content)
             
