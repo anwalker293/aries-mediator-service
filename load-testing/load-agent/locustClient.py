@@ -317,7 +317,7 @@ class CustomClient:
             headers=headers)
 
         if r.status_code != 200:
-            raise Exception(r.content)
+            raise Exception("r is ", r)
             
         r = r.json()
 
