@@ -299,7 +299,7 @@ class CustomClient:
                 "comment": "Performance Verification",
                 "connection_id": connection_id,
                 "proof_request": {
-                    "name": "Proof for AFJ Perf",
+                    "name": "PerfScore",
                     "nonce": "1",
                     "requested_attributes": {
                         str(uuid4()): {
