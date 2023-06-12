@@ -300,7 +300,6 @@ class CustomClient:
                 "connection_id": connection_id,
                 "proof_request": {
                     "name": "PerfScore",
-                    "nonce": "1",
                     "requested_attributes": {
                         str(uuid4()): {
                             "name": "score"
@@ -314,7 +313,7 @@ class CustomClient:
             headers=headers)
 
         if r.status_code != 200:
-            raise Exception("r is ", r)
+            raise Exception(r)
             
         r = r.json()
 
