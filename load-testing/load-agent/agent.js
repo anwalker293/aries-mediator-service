@@ -297,6 +297,7 @@ let presentationExchange = async (agent) => {
         await agent.proofs.acceptRequest({
           proofRecordId: payload.proofRecord.id,
         });
+        break;
       case ariesCore.ProofState.Done:
         //console.log(
         //  `Presentation for presentation id ${payload.proofRecord.id} is accepted`
@@ -306,6 +307,7 @@ let presentationExchange = async (agent) => {
           onRequest
         );
         def.resolve(true);
+        break;
     }
   };
 
