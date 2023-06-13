@@ -377,6 +377,7 @@ rl.setPrompt("");
 rl.prompt(false);
 
 const handleError = async (e) => {
+  throw e;
   process.stdout.write(JSON.stringify({ error: 1, result: e }) + "\n");
 };
 
