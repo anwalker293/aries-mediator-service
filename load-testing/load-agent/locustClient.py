@@ -316,8 +316,19 @@ class CustomClient:
             raise Exception(r)
             
         r = r.json()
+        throw Exception("r is ", r)
+
+
+        # Need to get presentation exchange id
 
         line = self.readjsonline()
+
+        pres_ex_id = '' 
+        # Want to do a for loop
+        g = requests.get(
+            os.getenv('ISSUER_URL') + '/present-proof/records/{pres_ex_id}',
+            headers=headers
+        )
 
         return r
 

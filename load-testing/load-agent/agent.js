@@ -301,11 +301,6 @@ let presentationExchange = async (agent) => {
           proofRecordId: payload.proofRecord.id,
           proofFormats: requestedCredentials.proofFormats,
         });
-        break;
-      case ariesCore.ProofState.Done:
-        //console.log(
-        //  `Presentation for presentation id ${payload.proofRecord.id} is accepted`
-        //);
         agent.events.off(
           ariesCore.ProofEventTypes.ProofStateChanged,
           onRequest
