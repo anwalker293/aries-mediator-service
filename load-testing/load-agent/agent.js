@@ -285,9 +285,8 @@ let presentationExchange = async (agent) => {
 
   let onRequest = async (event) => {
     let payload = event.payload;
-    console.log(payload);
 
-    switch (payload.Proof.state) {
+    switch (payload.proofRecord.state) {
       case ariesCore.ProofState.RequestReceived:
         // console.log("Received a request");
         // custom logic here
