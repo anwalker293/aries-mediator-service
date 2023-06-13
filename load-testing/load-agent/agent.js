@@ -292,13 +292,13 @@ let presentationExchange = async (agent) => {
         // custom logic here
         const requestedCredentials =
           await agent.proofs.autoSelectCredentialsForProofRequest({
-            proofRecordId: proofRecord.id,
+            proofRecordId: payload.proofRecord.id,
             config: {
               filterByPresentationPreview: true,
             },
           });
         await agent.proofs.acceptRequest({
-          proofRecordId: proofRecord.id,
+          proofRecordId: payload.proofRecord.id,
           proofFormats: requestedCredentials.proofFormats,
         });
         break;
