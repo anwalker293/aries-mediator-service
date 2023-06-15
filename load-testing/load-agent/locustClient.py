@@ -207,7 +207,10 @@ class CustomClient:
             json={ "metadata": {}, "my_label": "Test" },
             headers=headers
             )
-        raise Exception("r is ", r.json())
+        try:
+            try_var = r.json()['invitation_url']
+        except Exception: 
+            raise Exception("r is ", r.json())
         if r.status_code != 200:
             raise Exception(r.content)
             
