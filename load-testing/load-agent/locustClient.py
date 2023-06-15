@@ -235,10 +235,16 @@ class CustomClient:
         self.run_command({"cmd":"receiveInvitation", "invitationUrl": invite})
 
         line = self.readjsonline()
+
         try:
-            google = line['connection']
+           return line['connection']
         except Exception:
-            raise Exception('line is ', line)
+            self.run_command({"cmd":"receiveInvitation", "invitationUrl": invite})
+            line = self.readjsonline()
+            try:
+                return line['connection']
+            except Exception:
+                raise Exception('line is ', line)
 
         return line['connection']
 
