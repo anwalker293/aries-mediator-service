@@ -329,7 +329,7 @@ class CustomClient:
                 os.getenv('ISSUER_URL') + f'/present-proof/records/{pres_ex_id}',
                 headers=headers
             )
-            if g.json()['state']!='request_sent':
+            if g.json()['state']!='request_sent' and g.json()['state']!='presentation_received':
                 first_time = False
         raise Exception("g is ", g, "and json is: ", g.json())
 
