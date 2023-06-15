@@ -316,10 +316,8 @@ class CustomClient:
             raise Exception(r)
 
         r = r.json()
-
-
-        #raise Exception("here is r ", r, "and keys are : ", ','.join(r.keys()))
-
+    
+        raise Exception("trying to grab r ", r['presentation_exchange_id'])
 
         # Need to get presentation exchange id
 
