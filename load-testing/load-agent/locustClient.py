@@ -296,6 +296,8 @@ class CustomClient:
     def presentation_exchange(self, connection_id):
         self.run_command({"cmd":"presentationExchange"})
 
+        line = self.readjsonline()
+
         # From verification side
         # TO DO: Change "issuer" everywhere to more general "ACA-Py"
         headers = json.loads(os.getenv('ISSUER_HEADERS')) # headers same
