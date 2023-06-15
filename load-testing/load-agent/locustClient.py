@@ -322,7 +322,6 @@ class CustomClient:
         #line = self.readjsonline()
 
         pres_ex_id = r['presentation_exchange_id']
-        raise Exception("here's it printed out : ", f'/present-proof/records/{pres_ex_id}')
         # Want to do a for loop
         g = requests.get(
             os.getenv('ISSUER_URL') + f'/present-proof/records/{pres_ex_id}',
