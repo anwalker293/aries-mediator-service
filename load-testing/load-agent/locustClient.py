@@ -317,8 +317,7 @@ class CustomClient:
 
         r = r.json()
 
-        if r.status_code == 200:
-            raise Exception("here are r's keys: ", ','.join(r.keys()))
+        raise Exception("here is r ", r, "and keys are : ", ','.join(r.keys()))
 
 
         # Need to get presentation exchange id
