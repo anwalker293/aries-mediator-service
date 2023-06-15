@@ -183,7 +183,8 @@ class CustomClient:
                 raise Exception("invalid read")
 
             if line['error'] != 0:
-                raise Exception(line['result'])
+                raise Exception("line is ", line)
+                #raise Exception(line['result'])
 
             return line
         except Exception as e:
