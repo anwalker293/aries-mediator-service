@@ -340,8 +340,6 @@ class CustomClient:
     
         # Need to get presentation exchange id
 
-        line = self.readjsonline()
-
         pres_ex_id = r['presentation_exchange_id']
         # Want to do a for loop
         iteration = 0 
@@ -358,6 +356,8 @@ class CustomClient:
         
         if g.json()['verified']!='true':
             raise AssertionError(f"Presentation was not successfully verified. Presentation in state {g.json['state']}")
+
+        line = self.readjsonline()
 
     @stopwatch
     def revoke_credential(self, credential):
