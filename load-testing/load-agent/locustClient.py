@@ -357,7 +357,8 @@ class CustomClient:
         if g.json()['verified']!='true':
             raise AssertionError(f"Presentation was not successfully verified. Presentation in state {g.json['state']}")
 
-        line = self.readjsonline()
+        self.agent.stdout.readline()
+        #line = self.readjsonline()
 
     @stopwatch
     def revoke_credential(self, credential):
