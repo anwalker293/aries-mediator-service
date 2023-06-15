@@ -236,6 +236,8 @@ class CustomClient:
 
         line = self.readjsonline()
 
+        raise Exception('line is ', line)
+
         try:
            return line['connection']
         except Exception:
