@@ -330,8 +330,11 @@ class CustomClient:
                 headers=headers
             )
             if g.json()['state']!='request_sent' and g.json()['state']!='presentation_received':
+                'request_sent' and g.json()['state']!='presentation_received'
                 first_time = False
-        raise Exception("g is ", g, "and json is: ", g.json())
+        
+        if g.json()['verified']!='true':
+            raise AssertionError(f"Presentation was not successfully verified. Presentation in state {g.json['state']}")
 
         return r
 
