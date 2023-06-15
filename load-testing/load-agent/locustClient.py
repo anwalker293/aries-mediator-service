@@ -319,7 +319,7 @@ class CustomClient:
     
         # Need to get presentation exchange id
 
-        line = self.readjsonline()
+        #line = self.readjsonline()
 
         pres_ex_id = r['presentation_exchange_id']
         raise Exception("here's it printed out : ", f'/present-proof/records/{pres_ex_id}')
