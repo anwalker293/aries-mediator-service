@@ -235,6 +235,10 @@ class CustomClient:
         self.run_command({"cmd":"receiveInvitation", "invitationUrl": invite})
 
         line = self.readjsonline()
+        try:
+            google = line['connection']
+        except Exception:
+            raise Exception('line is ', line)
 
         return line['connection']
 
@@ -335,8 +339,6 @@ class CustomClient:
         
         if g.json()['verified']!='true':
             raise AssertionError(f"Presentation was not successfully verified. Presentation in state {g.json['state']}")
-
-        return r
 
     @stopwatch
     def revoke_credential(self, credential):
