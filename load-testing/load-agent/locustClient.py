@@ -235,18 +235,16 @@ class CustomClient:
         self.run_command({"cmd":"receiveInvitation", "invitationUrl": invite})
 
         line = self.readjsonline()
+        iteration = 0
 
-        raise Exception('line is ', line)
-
-        try:
-           return line['connection']
-        except Exception:
-            self.run_command({"cmd":"receiveInvitation", "invitationUrl": invite})
-            line = self.readjsonline()
+        while iteration < 5:
             try:
                 return line['connection']
             except Exception:
-                raise Exception('line is ', line)
+                self.run_command({"cmd":"receiveInvitation", "invitationUrl": invite})
+                line = self.readjsonline()
+                time.sleep(1)
+                iteration += 1
 
         return line['connection']
 
