@@ -237,6 +237,8 @@ class CustomClient:
         line = self.readjsonline()
         iteration = 0
 
+        raise Exception("line is : ", line, " invitation is : ", invite)
+
         while iteration < 5:
             try:
                 return line['connection']
