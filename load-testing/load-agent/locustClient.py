@@ -207,7 +207,7 @@ class CustomClient:
             json={ "metadata": {}, "my_label": "Test" },
             headers=headers
             )
-        raise Exception("r is ", r)
+        raise Exception("r is ", r.json())
         if r.status_code != 200:
             raise Exception(r.content)
             
