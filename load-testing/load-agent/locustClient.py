@@ -243,16 +243,16 @@ class CustomClient:
 
         
 
-        while iteration < 5:
-            try:
-                return line['connection']
-            except Exception:
-                raise Exception("line is : ", line, " invitation is : ", invite)
-                #self.run_command({"cmd":"receiveInvitation", "invitationUrl": invite})
-                #line = self.readjsonline()
-                #time.sleep(1)
-                #iteration += 1
-                #raise Exception(line)
+        # while iteration < 5:
+        #     try:
+        #         return line['connection']
+        #     except Exception:
+        #         raise Exception("line is : ", line, " invitation is : ", invite)
+        #         #self.run_command({"cmd":"receiveInvitation", "invitationUrl": invite})
+        #         #line = self.readjsonline()
+        #         #time.sleep(1)
+        #         #iteration += 1
+        #         #raise Exception(line)
 
         return line['connection']
 
@@ -339,7 +339,7 @@ class CustomClient:
     
         # Need to get presentation exchange id
 
-        #line = self.readjsonline()
+        line = self.readjsonline()
 
         pres_ex_id = r['presentation_exchange_id']
         # Want to do a for loop
