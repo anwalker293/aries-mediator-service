@@ -245,6 +245,7 @@ class CustomClient:
                 line = self.readjsonline()
                 time.sleep(1)
                 iteration += 1
+                raise Exception(line)
 
         return line['connection']
 
