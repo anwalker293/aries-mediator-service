@@ -339,15 +339,17 @@ class CustomClient:
 
         pres_ex_id = r['presentation_exchange_id']
         # Want to do a for loop
-        first_time = True
-        while first_time:
+        iteration = 0 
+        while iteration < 5: 
             g = requests.get(
                 os.getenv('ISSUER_URL') + f'/present-proof/records/{pres_ex_id}',
                 headers=headers
             )
             if g.json()['state']!='request_sent' and g.json()['state']!='presentation_received':
                 'request_sent' and g.json()['state']!='presentation_received'
-                first_time = False
+                break 
+            iteration += 1
+            time.sleep(1)
         
         if g.json()['verified']!='true':
             raise AssertionError(f"Presentation was not successfully verified. Presentation in state {g.json['state']}")
