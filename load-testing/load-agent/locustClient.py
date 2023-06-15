@@ -324,12 +324,13 @@ class CustomClient:
         pres_ex_id = r['presentation_exchange_id']
         # Want to do a for loop
         first_time = True
-        while g.json()['state']=='request_sent' or first_time:
+        while first_time:
             g = requests.get(
                 os.getenv('ISSUER_URL') + f'/present-proof/records/{pres_ex_id}',
                 headers=headers
             )
-            first_time = False
+            if g.json()['state']!='request_sent':
+                first_time = False
         raise Exception("g is ", g, "and json is: ", g.json())
 
         return r
