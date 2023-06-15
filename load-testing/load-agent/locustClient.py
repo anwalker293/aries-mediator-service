@@ -317,19 +317,21 @@ class CustomClient:
 
         r = r.json()
 
-        raise Exception("here is r ", r, "and keys are : ", ','.join(r.keys()))
+
+        #raise Exception("here is r ", r, "and keys are : ", ','.join(r.keys()))
 
 
         # Need to get presentation exchange id
 
         line = self.readjsonline()
 
-        pres_ex_id = '' 
+        pres_ex_id = r['presentation_exchange_id'] 
         # Want to do a for loop
         g = requests.get(
-            os.getenv('ISSUER_URL') + '/present-proof/records/{pres_ex_id}',
+            os.getenv('ISSUER_URL') + f'/present-proof/records/{pres_ex_id}',
             headers=headers
         )
+        raise Exception("g is ", g, "and json is: ", g.json())
 
         return r
 
