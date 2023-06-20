@@ -12,6 +12,8 @@ from gevent import subprocess
 from gevent import select
 from gevent import lock as gevent_lock
 
+from uuid import uuid4
+
 SHUTDOWN_TIMEOUT_SECONDS=10
 READ_TIMEOUT_SECONDS=120
 ERRORS_BEFORE_RESTART=10
@@ -181,7 +183,8 @@ class CustomClient:
                 raise Exception("invalid read")
 
             if line['error'] != 0:
-                raise Exception(line['result'])
+                raise Exception("line is ", line)
+                #raise Exception(line['result'])
 
             return line
         except Exception as e:
@@ -205,6 +208,10 @@ class CustomClient:
             json={ "metadata": {}, "my_label": "Test" },
             headers=headers
             )
+        try:
+            try_var = r.json()['invitation_url']
+        except Exception: 
+            raise Exception("r is ", r.json())
         if r.status_code != 200:
             raise Exception(r.content)
             
@@ -233,6 +240,20 @@ class CustomClient:
         self.run_command({"cmd":"receiveInvitation", "invitationUrl": invite})
 
         line = self.readjsonline()
+        iteration = 0
+
+        
+
+        # while iteration < 5:
+        #     try:
+        #         return line['connection']
+        #     except Exception:
+        #         raise Exception("line is : ", line, " invitation is : ", invite)
+        #         #self.run_command({"cmd":"receiveInvitation", "invitationUrl": invite})
+        #         #line = self.readjsonline()
+        #         #time.sleep(1)
+        #         #iteration += 1
+        #         #raise Exception(line)
 
         return line['connection']
 
@@ -275,6 +296,69 @@ class CustomClient:
         line = self.readjsonline()
 
         return r
+
+    @stopwatch
+    def presentation_exchange(self, connection_id):
+        self.run_command({"cmd":"presentationExchange"})
+
+        #line = self.readjsonline()
+
+        # From verification side
+        # TO DO: Change "issuer" everywhere to more general "ACA-Py"
+        headers = json.loads(os.getenv('ISSUER_HEADERS')) # headers same
+        headers['Content-Type'] = 'application/json'
+
+        verifier_did = os.getenv('CRED_DEF').split(':')[0]
+        schema_parts = os.getenv('SCHEMA').split(':')
+
+        # Might need to change nonce
+        # TO DO: Generalize schema parts
+        r = requests.post(
+            os.getenv('ISSUER_URL') + '/present-proof/send-request', 
+            json={
+                "auto_verify": True,
+                "comment": "Performance Verification",
+                "connection_id": connection_id,
+                "proof_request": {
+                    "name": "PerfScore",
+                    "requested_attributes": {
+                        str(uuid4()): {
+                            "name": "score"
+                        }
+                    },
+                    "requested_predicates": {}, 
+                    "version": "1.0"
+                },
+                "trace": True 
+            }, 
+            headers=headers)
+
+        if r.status_code != 200:
+            raise Exception("r is ", r.json())
+
+        r = r.json()
+    
+        # Need to get presentation exchange id
+
+        pres_ex_id = r['presentation_exchange_id']
+        # Want to do a for loop
+        iteration = 0 
+        while iteration < 5: 
+            g = requests.get(
+                os.getenv('ISSUER_URL') + f'/present-proof/records/{pres_ex_id}',
+                headers=headers
+            )
+            if g.json()['state']!='request_sent' and g.json()['state']!='presentation_received':
+                'request_sent' and g.json()['state']!='presentation_received'
+                break 
+            iteration += 1
+            time.sleep(1)
+        
+        if g.json()['verified']!='true':
+            raise AssertionError(f"Presentation was not successfully verified. Presentation in state {g.json['state']}")
+
+        self.agent.stdout.readline()
+        #line = self.readjsonline()
 
     @stopwatch
     def revoke_credential(self, credential):
