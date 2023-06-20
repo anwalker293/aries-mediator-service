@@ -15,11 +15,13 @@ class CustomLocust(User):
         self.client = CustomClient(self.host)
 
 class UserBehaviour(SequentialTaskSet):
-    def on_start(self):
-        self.client.startup(withMediation=True)
-
+    def get_invite(self):
         invite = self.client.issuer_getinvite()
         self.invite = invite
+
+    def on_start(self):
+        self.client.startup(withMediation=True)
+        self.get_invite()
 
     def on_stop(self):
         self.client.shutdown()
