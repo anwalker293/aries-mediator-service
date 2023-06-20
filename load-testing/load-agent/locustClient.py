@@ -343,7 +343,7 @@ class CustomClient:
         pres_ex_id = r['presentation_exchange_id']
         # Want to do a for loop
         iteration = 0 
-        while iteration < 120: 
+        while iteration < 5: 
             g = requests.get(
                 os.getenv('ISSUER_URL') + f'/present-proof/records/{pres_ex_id}',
                 headers=headers
