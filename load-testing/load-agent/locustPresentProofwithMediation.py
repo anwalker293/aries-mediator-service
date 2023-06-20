@@ -18,13 +18,11 @@ class UserBehaviour(SequentialTaskSet):
     def on_start(self):
         self.client.startup(withMediation=True)
 
-    def on_stop(self):
-        self.client.shutdown()
-
-    @task
-    def get_invite(self):
         invite = self.client.issuer_getinvite()
         self.invite = invite
+
+    def on_stop(self):
+        self.client.shutdown()
 
     @task
     def accept_invite(self):
