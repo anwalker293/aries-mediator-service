@@ -333,6 +333,8 @@ class CustomClient:
             }, 
             headers=headers)
 
+        raise Exception("r is ", r)
+
         if r.status_code != 200:
             raise Exception("r is ", r.json())
 
