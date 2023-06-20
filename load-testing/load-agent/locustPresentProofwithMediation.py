@@ -18,27 +18,24 @@ class UserBehaviour(SequentialTaskSet):
     def on_start(self):
         self.client.startup(withMediation=True)
 
-    def on_stop(self):
-        self.client.shutdown()
-
-    @task
-    def get_invite(self):
+        # Get invite
         invite = self.client.issuer_getinvite()
         self.invite = invite
 
-    @task
-    def accept_invite(self):
+        # Accept invite
         self.client.ensure_is_running()
 
         connection = self.client.accept_invite(self.invite['invitation_url'])
         self.connection = connection
 
-    @task
-    def receive_credential(self):
+        # Receive credential
         self.client.ensure_is_running()
 
         credential = self.client.receive_credential(self.invite['connection_id'])
 
+    def on_stop(self):
+        self.client.shutdown()
+        
     @task
     def presentation_exchange(self):
         self.client.ensure_is_running()
