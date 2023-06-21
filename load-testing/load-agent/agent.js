@@ -299,7 +299,7 @@ let presentationExchange = async (agent) => {
         // const indyProofRequestName = proofRequestData?.request?.indy?.name
 
         const requestedCredentials =
-          await this.agent.proofs.autoSelectCredentialsForProofRequest({
+          await agent.proofs.autoSelectCredentialsForProofRequest({
             proofRecordId: payload.proofRecord.id,
             config: {
               filterByPresentationPreview: true,
@@ -346,7 +346,7 @@ let presentationExchange = async (agent) => {
         //       proofRecordId: proofId,
         //       proofFormats: {indy: credential},
         //     })
-        await this.agent.proofs.acceptRequest({
+        await agent.proofs.acceptRequest({
           proofRecordId: payload.proofRecord.id,
           proofFormats: requestedCredentials.proofFormats,
         });
