@@ -302,6 +302,12 @@ let presentationExchange = async (agent) => {
           await agent.proofs.getRequestedCredentialsForProofRequest({
             proofRecordId: payload.proofRecord.id,
           });
+        console.log(
+          "requested credentials: ",
+          requestedCredentials,
+          " whole request: ",
+          requestedCredentials.requestedAttributes
+        );
         const referents = Object.keys(requestedCredentials.requestedAttributes);
         const attributes =
           requestedCredentials?.requestedAttributes[referents[0]];
