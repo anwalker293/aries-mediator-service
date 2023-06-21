@@ -290,7 +290,7 @@ let presentationExchange = async (agent) => {
       case ariesCore.ProofState.RequestReceived:
         // console.log("Received a request");
         // custom logic here
-        const retrievedCredentials = (
+        const requestedCredentials = (
           await agent.proofs.getRequestedCredentialsForProofRequest({
             proofRecordId: payload.proofRecord.id,
           })
