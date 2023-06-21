@@ -322,7 +322,7 @@ class CustomClient:
                 "proof_request": {
                     "name": "PerfScore",
                     "requested_attributes": {
-                        str(uuid4()): {
+                        "score": {
                             "name": "score"
                         }
                     },
