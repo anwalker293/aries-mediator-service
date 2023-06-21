@@ -299,30 +299,41 @@ let presentationExchange = async (agent) => {
         // const indyProofRequestName = proofRequestData?.request?.indy?.name
 
         const requestedCredentials =
-          await agent.proofs.getRequestedCredentialsForProofRequest({
+          await this.agent.proofs.autoSelectCredentialsForProofRequest({
             proofRecordId: payload.proofRecord.id,
+            config: {
+              filterByPresentationPreview: true,
+            },
           });
-        console.log(
-          "requested credentials: ",
-          requestedCredentials,
-          " whole request: ",
-          requestedCredentials.requestedAttributes
-        );
-        const referents = Object.keys(requestedCredentials.requestedAttributes);
-        const attributes =
-          requestedCredentials?.requestedAttributes[referents[0]];
-        let credential = new ariesCore.RequestedCredentials({});
-        credential.requestedAttributes[referents[0]] = attributes[0];
+
+        // const requestedCredentials =
+        //   await agent.proofs.getRequestedCredentialsForProofRequest({
+        //     proofRecordId: payload.proofRecord.id,
+        //   });
+        // console.log(
+        //   "requested credentials: ",
+        //   requestedCredentials,
+        //   " whole request: ",
+        //   requestedCredentials.requestedAttributes
+        // );
+        // const referents = Object.keys(requestedCredentials.requestedAttributes);
+        // const attributes =
+        //   requestedCredentials?.requestedAttributes[referents[0]];
+        // let credential = new ariesCore.RequestedCredentials({});
+        // credential.requestedAttributes[referents[0]] = attributes[0];
         // const attributes = requestedCredentials?.requestedAttributes[
         //   referents[0]
         // ] as Array<RequestedAttribute>
         // let credential = new RequestedCredentials({})
         // credential.requestedAttributes[referents[0]] = attributes[0]
+        //
 
-        const proofRequestData = await agent?.proofs?.getFormatData(
-          payload.proofRecord.id
-        );
-        const indyProofRequestName = proofRequestData?.request?.indy?.name;
+        // console.log(greenText('\nProof request accepted!\n')
+
+        // const proofRequestData = await agent?.proofs?.getFormatData(
+        //   payload.proofRecord.id
+        // );
+        // const indyProofRequestName = proofRequestData?.request?.indy?.name;
         // .proofFormats.indy;
         // const requestedCredentials =
         //   await agent.proofs.autoSelectCredentialsForProofRequest({
@@ -335,10 +346,15 @@ let presentationExchange = async (agent) => {
         //       proofRecordId: proofId,
         //       proofFormats: {indy: credential},
         //     })
-        await agent.proofs.acceptRequest({
+        await this.agent.proofs.acceptRequest({
           proofRecordId: payload.proofRecord.id,
           proofFormats: requestedCredentials.proofFormats,
         });
+
+        // await agent.proofs.acceptRequest({
+        //   proofRecordId: payload.proofRecord.id,
+        //   proofFormats: requestedCredentials.proofFormats,
+        // });
         agent.events.off(
           ariesCore.ProofEventTypes.ProofStateChanged,
           onRequest
