@@ -290,10 +290,33 @@ let presentationExchange = async (agent) => {
       case ariesCore.ProofState.RequestReceived:
         // console.log("Received a request");
         // custom logic here
+
+        // const proof = await agent?.proofs.getRequestedCredentialsForProofRequest({
+        //   proofRecordId: proofId,
+        // })
+
+        // const proofRequestData = await agent?.proofs?.getFormatData(proofId)
+        // const indyProofRequestName = proofRequestData?.request?.indy?.name
+
         const requestedCredentials =
           await agent.proofs.getRequestedCredentialsForProofRequest({
             proofRecordId: payload.proofRecord.id,
           });
+        const referents = Object.keys(requestedCredentials.requestedAttributes);
+        const attributes =
+          requestedCredentials?.requestedAttributes[referents[0]];
+        let credential = new ariesCore.RequestedCredentials({});
+        credential.requestedAttributes[referents[0]] = attributes[0];
+        // const attributes = requestedCredentials?.requestedAttributes[
+        //   referents[0]
+        // ] as Array<RequestedAttribute>
+        // let credential = new RequestedCredentials({})
+        // credential.requestedAttributes[referents[0]] = attributes[0]
+
+        const proofRequestData = await agent?.proofs?.getFormatData(
+          payload.proofRecord.id
+        );
+        const indyProofRequestName = proofRequestData?.request?.indy?.name;
         // .proofFormats.indy;
         // const requestedCredentials =
         //   await agent.proofs.autoSelectCredentialsForProofRequest({
@@ -302,6 +325,10 @@ let presentationExchange = async (agent) => {
         //       filterByPresentationPreview: true,
         //     },
         //   });
+        // await agent?.proofs.acceptRequest({
+        //       proofRecordId: proofId,
+        //       proofFormats: {indy: credential},
+        //     })
         await agent.proofs.acceptRequest({
           proofRecordId: payload.proofRecord.id,
           proofFormats: requestedCredentials.proofFormats,
