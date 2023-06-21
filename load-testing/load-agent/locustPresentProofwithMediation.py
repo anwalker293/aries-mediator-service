@@ -30,15 +30,12 @@ class UserBehaviour(SequentialTaskSet):
         self.client.ensure_is_running()
 
         credential = self.client.receive_credential(self.invite['connection_id'])
-        print("credential is ", credential)
 
     def on_start(self):
         self.client.startup(withMediation=True)
         self.get_invite()
         self.accept_invite()
-        print("before rc")
         self.receive_credential()
-        print("after rc")
 
     def on_stop(self):
         self.client.shutdown()
@@ -51,7 +48,6 @@ class UserBehaviour(SequentialTaskSet):
 
         # Need connection id
         print("sleeping for 6 seconds")
-        time.sleep(6)
         presentation = self.client.presentation_exchange(self.invite['connection_id'])
         print("after present ex")
 
