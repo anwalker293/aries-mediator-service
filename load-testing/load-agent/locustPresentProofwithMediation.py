@@ -36,7 +36,9 @@ class UserBehaviour(SequentialTaskSet):
         self.client.startup(withMediation=True)
         self.get_invite()
         self.accept_invite()
+        print("before rc")
         self.receive_credential()
+        print("after rc")
 
     def on_stop(self):
         self.client.shutdown()
@@ -44,11 +46,12 @@ class UserBehaviour(SequentialTaskSet):
         
     @task
     def presentation_exchange(self):
+        print("before present ex")
         self.client.ensure_is_running()
 
         # Need connection id
         presentation = self.client.presentation_exchange(self.invite['connection_id'])
-
+        print("after present ex")
 
 class Issue(CustomLocust):
     tasks = [UserBehaviour]
