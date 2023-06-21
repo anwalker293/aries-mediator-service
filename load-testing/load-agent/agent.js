@@ -297,6 +297,7 @@ let presentationExchange = async (agent) => {
               filterByPresentationPreview: true,
             },
           });
+        setRequestedCredentials(requestedCredentials);
         // const requestedCredentials =
         //   await agent.proofs.autoSelectCredentialsForProofRequest({
         //     proofRecordId: payload.proofRecord.id,
