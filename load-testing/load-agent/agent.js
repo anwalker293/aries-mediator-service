@@ -290,13 +290,18 @@ let presentationExchange = async (agent) => {
       case ariesCore.ProofState.RequestReceived:
         // console.log("Received a request");
         // custom logic here
-        const requestedCredentials =
-          await agent.proofs.autoSelectCredentialsForProofRequest({
+        const retrievedCredentials = (
+          await agent.proofs.getRequestedCredentialsForProofRequest({
             proofRecordId: payload.proofRecord.id,
-            config: {
-              filterByPresentationPreview: true,
-            },
-          });
+          })
+        ).proofFormats.indy;
+        // const requestedCredentials =
+        //   await agent.proofs.autoSelectCredentialsForProofRequest({
+        //     proofRecordId: payload.proofRecord.id,
+        //     config: {
+        //       filterByPresentationPreview: true,
+        //     },
+        //   });
         await agent.proofs.acceptRequest({
           proofRecordId: payload.proofRecord.id,
           proofFormats: requestedCredentials.proofFormats,
