@@ -24,7 +24,6 @@ class UserBehaviour(SequentialTaskSet):
 
         connection = self.client.accept_invite(self.invite['invitation_url'])
         self.connection = connection
-        print("invite is ", self.invite)
 
     def receive_credential(self):
         self.client.ensure_is_running()
@@ -39,17 +38,14 @@ class UserBehaviour(SequentialTaskSet):
 
     def on_stop(self):
         self.client.shutdown()
-
         
     @task
     def presentation_exchange(self):
-        print("before present ex")
-        self.client.ensure_is_running()
+        if not self.is_running:
+            self.on_start()
 
         # Need connection id
-        print("sleeping for 6 seconds")
         presentation = self.client.presentation_exchange(self.invite['connection_id'])
-        print("after present ex")
 
 class Issue(CustomLocust):
     tasks = [UserBehaviour]
