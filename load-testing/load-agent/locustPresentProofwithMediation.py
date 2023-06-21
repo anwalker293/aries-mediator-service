@@ -50,6 +50,8 @@ class UserBehaviour(SequentialTaskSet):
         self.client.ensure_is_running()
 
         # Need connection id
+        print("sleeping for 6 seconds")
+        time.sleep(6)
         presentation = self.client.presentation_exchange(self.invite['connection_id'])
         print("after present ex")
 
