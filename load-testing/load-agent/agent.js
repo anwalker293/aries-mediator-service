@@ -240,8 +240,8 @@ let receiveCredential = async (agent) => {
         await agent.credentials.acceptOffer({
           credentialRecordId: payload.credentialRecord.id,
         });
-        break
-      case ariesCore.CredentialState.CredentialReceived
+        break;
+      case ariesCore.CredentialState.CredentialReceived:
         //console.log(`Credential for credential id ${payload.credentialRecord.id} is accepted`)
         // For demo purposes we exit the program here.
 
@@ -251,7 +251,7 @@ let receiveCredential = async (agent) => {
         );
 
         def.resolve(true);
-        break
+        break;
     }
   };
 
