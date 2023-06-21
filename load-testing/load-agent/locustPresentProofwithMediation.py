@@ -42,7 +42,7 @@ class UserBehaviour(SequentialTaskSet):
     @task
     def presentation_exchange(self):
         if not self.client.is_running:
-            self.on_start()
+            StopUser() 
 
         # Need connection id
         presentation = self.client.presentation_exchange(self.invite['connection_id'])
