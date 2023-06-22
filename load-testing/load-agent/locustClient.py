@@ -103,6 +103,7 @@ class CustomClient:
             })
 
             line = self.readjsonline()
+            agent = self.agent.stdout.readline()
             agentConfig = self.agent.stdout.readline()
 
             raise Exception("agentConfig is ", agentConfig)
