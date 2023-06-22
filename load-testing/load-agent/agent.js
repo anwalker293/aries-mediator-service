@@ -440,7 +440,8 @@ rl.on("line", async (line) => {
     var command = JSON.parse(line);
 
     if (command["cmd"] == "start" && agent == null) {
-      let [agent, agentConfig] = await initializeAgent(
+      let agent, agentConfig;
+      [agent, agentConfig] = await initializeAgent(
         command["withMediation"],
         command["port"]
       );
