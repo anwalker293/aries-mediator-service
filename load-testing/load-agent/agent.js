@@ -19,7 +19,7 @@ function generateString(length) {
   return result;
 }
 
-const initializeAgent = async (withMediation, port) => {
+const initializeAgent = async (withMediation, port, agentConfig = null) => {
   // Simple agent configuration. This sets some basic fields like the wallet
   // configuration and the label. It also sets the mediator invitation url,
   // because this is most likely required in a mobile environment.
@@ -27,20 +27,22 @@ const initializeAgent = async (withMediation, port) => {
   let mediation_url = config.mediation_url;
   let endpoints = ["http://" + config.agent_ip + ":" + port];
 
-  const agentConfig = {
-    indyLedgers: [config.ledger],
-    label: generateString(14),
-    walletConfig: {
-      id: generateString(32),
-      key: generateString(32),
-    },
-    autoAcceptConnections: true,
-    endpoints: endpoints,
+  if (agentConfig === null) {
+    const agentConfig = {
+      indyLedgers: [config.ledger],
+      label: generateString(14),
+      walletConfig: {
+        id: generateString(32),
+        key: generateString(32),
+      },
+      autoAcceptConnections: true,
+      endpoints: endpoints,
 
-    autoAcceptInvitation: true,
-    // logger: new ariesCore.ConsoleLogger(ariesCore.LogLevel.trace),
-    mediatorConnectionsInvite: mediation_url,
-  };
+      autoAcceptInvitation: true,
+      // logger: new ariesCore.ConsoleLogger(ariesCore.LogLevel.trace),
+      mediatorConnectionsInvite: mediation_url,
+    };
+  }
 
   if (withMediation) {
     delete agentConfig["endpoints"];
@@ -443,7 +445,8 @@ rl.on("line", async (line) => {
       let agent, agentConfig;
       [agent, agentConfig] = await initializeAgent(
         command["withMediation"],
-        command["port"]
+        command["port"],
+        command["agentConfig"]
       );
       // process.stdout.write(
       //   JSON.stringify({ error: 0, result: "Initialized agent..." }) + "\n"

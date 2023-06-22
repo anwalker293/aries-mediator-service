@@ -3,6 +3,8 @@ import time
 import inspect
 import json
 
+from typing import Any, Optional
+
 import fcntl
 import os
 import requests
@@ -79,7 +81,7 @@ class CustomClient:
     _locust_environment = None
 
     @stopwatch
-    def startup(self, withMediation=True):
+    def startup(self, withMediation=True, reinstantiate=False):
         if (not self.withMediation) and self.withMediation is None:
             self.withMediation = withMediation
         try:
@@ -95,16 +97,20 @@ class CustomClient:
                 stdout=subprocess.PIPE, 
                 stdin=subprocess.PIPE,
                 shell=False)
+        
+            if not reinstantiate:
+                self.agentConfig = ''
 
             self.run_command({
-                "cmd": "start", 
-                "withMediation": self.withMediation,
-                "port": self.port
-            })
-
-            agentConfig = self.readjsonline()
-
-            raise Exception("agentConfig is ", agentConfig)
+                    "cmd": "start", 
+                    "withMediation": self.withMediation,
+                    "port": self.port,
+                    "agentConfig": self.agentConfig
+                })
+            
+            if not reinstantiate:
+                # Create the wallet for the first time
+                self.agentConfig = self.readjsonline()
 
             # we tried to start the agent and failed
             if self.agent is None or self.agent.poll() is not None: 
