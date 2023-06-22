@@ -103,11 +103,9 @@ class CustomClient:
             })
 
             line = self.readjsonline()
-            agent = self.agent.stdout.readline()
-            agentConfig = self.agent.stdout.readline()
+            agentConfig = self.readjsonline()
 
             raise Exception("agentConfig is ", agentConfig)
-            raise Exception("agent is ", agent)
 
             # we tried to start the agent and failed
             if self.agent is None or self.agent.poll() is not None: 
