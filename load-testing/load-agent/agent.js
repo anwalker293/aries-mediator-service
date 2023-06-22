@@ -448,7 +448,9 @@ rl.on("line", async (line) => {
       // process.stdout.write(
       //   JSON.stringify({ error: 0, result: "Initialized agent..." }) + "\n"
       // );
-      process.stdout.write(JSON.stringify({ error: 0, result: agentConfig }));
+      process.stdout.write(
+        JSON.stringify({ error: 0, result: agentConfig }) + "\n"
+      );
     } else if (command["cmd"] == "ping_mediator") {
       await pingMediator(agent);
 
