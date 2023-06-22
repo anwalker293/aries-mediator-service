@@ -102,7 +102,6 @@ class CustomClient:
                 "port": self.port
             })
 
-            line = self.readjsonline()
             agentConfig = self.readjsonline()
 
             raise Exception("agentConfig is ", agentConfig)
