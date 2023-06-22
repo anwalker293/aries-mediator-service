@@ -443,6 +443,9 @@ rl.on("line", async (line) => {
 
     if (command["cmd"] == "start" && agent == null) {
       let agent, agentConfig;
+      process.stdout.write(
+        JSON.stringify({ error: 1, result: command["agentConfig"] }) + "\n"
+      );
       [agent, agentConfig] = await initializeAgent(
         command["withMediation"],
         command["port"],
