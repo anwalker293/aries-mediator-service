@@ -109,7 +109,7 @@ const initializeAgent = async (withMediation, port) => {
     await agent.initialize();
   }
 
-  return agent;
+  return [agent, agentConfig];
 };
 
 const pingMediator = async (agent) => {
@@ -440,10 +440,16 @@ rl.on("line", async (line) => {
     var command = JSON.parse(line);
 
     if (command["cmd"] == "start" && agent == null) {
-      agent = await initializeAgent(command["withMediation"], command["port"]);
+      initializeAgentResult = await initializeAgent(
+        command["withMediation"],
+        command["port"]
+      );
+      const agent = initializeAgentResult[0];
+      const agentConfig = initializeAgentResult[1];
       process.stdout.write(
         JSON.stringify({ error: 0, result: "Initialized agent..." }) + "\n"
       );
+      process.stdout.write(JSON.strinigy({ error: 0, result: agentConfig }));
     } else if (command["cmd"] == "ping_mediator") {
       await pingMediator(agent);
 
