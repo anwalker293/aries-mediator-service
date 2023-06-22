@@ -19,7 +19,7 @@ function generateString(length) {
   return result;
 }
 
-const initializeAgent = async (withMediation, port, agentConfig = null) => {
+const initializeAgent = async (withMediation, port, agentConfig = "") => {
   // Simple agent configuration. This sets some basic fields like the wallet
   // configuration and the label. It also sets the mediator invitation url,
   // because this is most likely required in a mobile environment.
@@ -27,7 +27,7 @@ const initializeAgent = async (withMediation, port, agentConfig = null) => {
   let mediation_url = config.mediation_url;
   let endpoints = ["http://" + config.agent_ip + ":" + port];
 
-  if (agentConfig === null) {
+  if (agentConfig === "") {
     const agentConfig = {
       indyLedgers: [config.ledger],
       label: generateString(14),
