@@ -106,8 +106,8 @@ class CustomClient:
                 })
 
             # Create the wallet for the first time
-            raise Exception("before")
-            self.agentConfig = self.readjsonline()
+            #self.agentConfig = self.readjsonline()
+            self.agentConfig = self.agent.stdout.readline()
             raise Exception("agentConfig is ", self.agentConfig)
 
             # we tried to start the agent and failed
