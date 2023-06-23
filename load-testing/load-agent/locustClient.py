@@ -97,6 +97,8 @@ class CustomClient:
                 stdout=subprocess.PIPE, 
                 stdin=subprocess.PIPE,
                 shell=False)
+
+            raise Exception("reinstantiate is ", reinstantiate)
         
             self.run_command({
                     "cmd": "start", 
