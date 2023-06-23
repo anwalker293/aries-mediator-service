@@ -28,6 +28,10 @@ const initializeAgent = async (withMediation, port, agentConfig = null) => {
   let endpoints = ["http://" + config.agent_ip + ":" + port];
 
   if (agentConfig === null) {
+    let changeConfig = true;
+  }
+
+  if (changeConfig === true) {
     const agentConfig = {
       indyLedgers: [config.ledger],
       label: generateString(14),
