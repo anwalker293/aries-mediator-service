@@ -31,7 +31,6 @@ class UserBehaviour(SequentialTaskSet):
         credential = self.client.receive_credential(self.invite['connection_id'])
 
     def on_start(self, reinstantiate=False):
-        print("reinstantiate is ", reinstantiate)
         self.client.startup(withMediation=True, reinstantiate=reinstantiate)
         self.get_invite()
         self.accept_invite()
