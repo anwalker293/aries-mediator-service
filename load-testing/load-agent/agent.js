@@ -22,7 +22,6 @@ function generateString(length) {
 const initializeAgent = async (withMediation, port, agentConfig = null) => {
   let agent = "helloooo";
   let goThrough = false;
-  agentConfig = "hi";
 
   if (agentConfig === null) {
     agent = "teenage mutant";
@@ -31,6 +30,8 @@ const initializeAgent = async (withMediation, port, agentConfig = null) => {
 
   if (goThrough === true) {
     agentConfig = "ninja turtles";
+  } else {
+    agentConfig = "hi";
   }
   return [agent, agentConfig];
 };
