@@ -98,13 +98,11 @@ class CustomClient:
                 stdin=subprocess.PIPE,
                 shell=False)
 
-            raise Exception("reinstantiate is ", reinstantiate)
-        
             self.run_command({
                     "cmd": "start", 
                     "withMediation": self.withMediation,
                     "port": self.port,
-                    "agentConfig": self.agentConfig if reinstatiate else None 
+                    "agentConfig": self.agentConfig if reinstantiate else None 
                 })
             
             # Create the wallet for the first time
