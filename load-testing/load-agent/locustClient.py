@@ -98,19 +98,15 @@ class CustomClient:
                 stdin=subprocess.PIPE,
                 shell=False)
         
-            if not reinstantiate:
-                self.agentConfig = ''
-
             self.run_command({
                     "cmd": "start", 
                     "withMediation": self.withMediation,
                     "port": self.port,
-                    "agentConfig": self.agentConfig
+                    "agentConfig": self.agentConfig if reinstatiate else None 
                 })
             
-            if not reinstantiate:
-                # Create the wallet for the first time
-                self.agentConfig = self.readjsonline()
+            # Create the wallet for the first time
+            self.agentConfig = self.readjsonline()
 
             # we tried to start the agent and failed
             if self.agent is None or self.agent.poll() is not None: 
