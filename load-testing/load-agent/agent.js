@@ -19,7 +19,7 @@ function generateString(length) {
   return result;
 }
 
-const initializeAgent = async (withMediation, port, agentConfig = "") => {
+const initializeAgent = async (withMediation, port, agentConfig = null) => {
   // Simple agent configuration. This sets some basic fields like the wallet
   // configuration and the label. It also sets the mediator invitation url,
   // because this is most likely required in a mobile environment.
@@ -27,7 +27,7 @@ const initializeAgent = async (withMediation, port, agentConfig = "") => {
   let mediation_url = config.mediation_url;
   let endpoints = ["http://" + config.agent_ip + ":" + port];
 
-  if (agentConfig === "") {
+  if (agentConfig === null) {
     agent = "helloooo";
     agentConfig = "hi";
     return [agent, agentConfig];
@@ -446,7 +446,7 @@ rl.on("line", async (line) => {
 
     if (command["cmd"] == "start" && agent == null) {
       let agent, agentConfig;
-      if (command["agentConfig"] === "") {
+      if (command["agentConfig"] === null) {
         [agent, agentConfig] = await initializeAgent(
           command["withMediation"],
           command["port"]
