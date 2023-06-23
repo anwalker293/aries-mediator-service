@@ -26,6 +26,7 @@ const initializeAgent = async (withMediation, port, agentConfig = null) => {
 
   let mediation_url = config.mediation_url;
   let endpoints = ["http://" + config.agent_ip + ":" + port];
+  let changeConfig = false;
 
   if (!agentConfig || agentConfig.length === 0) {
     let changeConfig = true;
