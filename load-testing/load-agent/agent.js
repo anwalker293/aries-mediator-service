@@ -24,95 +24,96 @@ const initializeAgent = async (withMediation, port, agentConfig = null) => {
   // configuration and the label. It also sets the mediator invitation url,
   // because this is most likely required in a mobile environment.
 
-  let mediation_url = config.mediation_url;
-  let endpoints = ["http://" + config.agent_ip + ":" + port];
+  agent = "helloooo";
+  agentConfig = "hi";
 
-  if (agentConfig === null) {
-    agent = "helloooo";
-    agentConfig = "hi";
-    return [agent, agentConfig];
-    const agentConfig = {
-      indyLedgers: [config.ledger],
-      label: generateString(14),
-      walletConfig: {
-        id: generateString(32),
-        key: generateString(32),
-      },
-      autoAcceptConnections: true,
-      endpoints: endpoints,
+  // let mediation_url = config.mediation_url;
+  // let endpoints = ["http://" + config.agent_ip + ":" + port];
 
-      autoAcceptInvitation: true,
-      // logger: new ariesCore.ConsoleLogger(ariesCore.LogLevel.trace),
-      mediatorConnectionsInvite: mediation_url,
-    };
-  }
+  // if (agentConfig === null) {
+  //   return [agent, agentConfig];
+  //   const agentConfig = {
+  //     indyLedgers: [config.ledger],
+  //     label: generateString(14),
+  //     walletConfig: {
+  //       id: generateString(32),
+  //       key: generateString(32),
+  //     },
+  //     autoAcceptConnections: true,
+  //     endpoints: endpoints,
 
-  if (withMediation) {
-    delete agentConfig["endpoints"];
-  } else {
-    delete agentConfig["mediatorConnectionsInvite"];
-  }
+  //     autoAcceptInvitation: true,
+  //     // logger: new ariesCore.ConsoleLogger(ariesCore.LogLevel.trace),
+  //     mediatorConnectionsInvite: mediation_url,
+  //   };
+  // }
 
-  // A new instance of an agent is created here
-  const agent = new ariesCore.Agent({
-    config: agentConfig,
-    dependencies: ariesNode.agentDependencies,
-  });
+  // if (withMediation) {
+  //   delete agentConfig["endpoints"];
+  // } else {
+  //   delete agentConfig["mediatorConnectionsInvite"];
+  // }
 
-  // Register a simple `WebSocket` outbound transport
-  agent.registerOutboundTransport(new ariesCore.WsOutboundTransport());
+  // // A new instance of an agent is created here
+  // const agent = new ariesCore.Agent({
+  //   config: agentConfig,
+  //   dependencies: ariesNode.agentDependencies,
+  // });
 
-  // Register a simple `Http` outbound transport
-  agent.registerOutboundTransport(new ariesCore.HttpOutboundTransport());
+  // // Register a simple `WebSocket` outbound transport
+  // agent.registerOutboundTransport(new ariesCore.WsOutboundTransport());
 
-  if (withMediation) {
-    // wait for medation to be configured
-    let timeout = 2 * 60000; // two minutes
+  // // Register a simple `Http` outbound transport
+  // agent.registerOutboundTransport(new ariesCore.HttpOutboundTransport());
 
-    const TimeDelay = new Promise((resolve, reject) => {
-      setTimeout(resolve, timeout, false);
-    });
+  // if (withMediation) {
+  //   // wait for medation to be configured
+  //   let timeout = 2 * 60000; // two minutes
 
-    var def = deferred();
+  //   const TimeDelay = new Promise((resolve, reject) => {
+  //     setTimeout(resolve, timeout, false);
+  //   });
 
-    var onConnectedMediation = async (event) => {
-      const mediatorConnection =
-        await agent.mediationRecipient.findDefaultMediatorConnection();
-      if (event.payload.connectionId === mediatorConnection?.id) {
-        def.resolve(true);
-        // we no longer need to listen to the event
-        agent.events.off(
-          ariesCore.TransportEventTypes.OutboundWebSocketOpenedEvent,
-          onConnectedMediation
-        );
-      }
-    };
+  //   var def = deferred();
 
-    agent.events.on(
-      ariesCore.TransportEventTypes.OutboundWebSocketOpenedEvent,
-      onConnectedMediation
-    );
+  //   var onConnectedMediation = async (event) => {
+  //     const mediatorConnection =
+  //       await agent.mediationRecipient.findDefaultMediatorConnection();
+  //     if (event.payload.connectionId === mediatorConnection?.id) {
+  //       def.resolve(true);
+  //       // we no longer need to listen to the event
+  //       agent.events.off(
+  //         ariesCore.TransportEventTypes.OutboundWebSocketOpenedEvent,
+  //         onConnectedMediation
+  //       );
+  //     }
+  //   };
 
-    // Initialize the agent
-    await agent.initialize();
+  //   agent.events.on(
+  //     ariesCore.TransportEventTypes.OutboundWebSocketOpenedEvent,
+  //     onConnectedMediation
+  //   );
 
-    // wait for ws to be configured
-    value = await Promise.race([TimeDelay, def.promise]);
+  //   // Initialize the agent
+  //   await agent.initialize();
 
-    if (!value) {
-      // we no longer need to listen to the event in case of failure
-      agent.events.off(
-        ariesCore.TransportEventTypes.OutboundWebSocketOpenedEvent,
-        onConnectedMediation
-      );
-      throw "Mediator timeout!";
-    }
-  } else {
-    agent.registerInboundTransport(
-      new ariesNode.HttpInboundTransport({ port: port })
-    );
-    await agent.initialize();
-  }
+  //   // wait for ws to be configured
+  //   value = await Promise.race([TimeDelay, def.promise]);
+
+  //   if (!value) {
+  //     // we no longer need to listen to the event in case of failure
+  //     agent.events.off(
+  //       ariesCore.TransportEventTypes.OutboundWebSocketOpenedEvent,
+  //       onConnectedMediation
+  //     );
+  //     throw "Mediator timeout!";
+  //   }
+  // } else {
+  //   agent.registerInboundTransport(
+  //     new ariesNode.HttpInboundTransport({ port: port })
+  //   );
+  //   await agent.initialize();
+  // }
 
   return [agent, agentConfig];
 };
