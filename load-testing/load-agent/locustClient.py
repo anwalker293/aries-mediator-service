@@ -191,7 +191,7 @@ class CustomClient:
                 raise Exception("invalid read")
 
             if line['error'] != 0:
-                raise Exception("line is ", line)
+                raise Exception("line is ", line, " and json is ", line.json())
                 #raise Exception(line['result'])
 
             return line
