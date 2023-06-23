@@ -106,6 +106,7 @@ class CustomClient:
                 })
 
             # Create the wallet for the first time
+            raise Exception("before")
             self.agentConfig = self.readjsonline()
             raise Exception("agentConfig is ", self.agentConfig)
 
