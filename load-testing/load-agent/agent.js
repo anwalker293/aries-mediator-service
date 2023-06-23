@@ -27,14 +27,14 @@ const initializeAgent = async (withMediation, port, agentConfig = null) => {
   agent = "helloooo";
   agentConfig = "hi";
 
-  if (agentConfig === null) {
-    agent = "teeenage mutant";
-    goThrough = true;
-  }
+  // if (agentConfig === null) {
+  //   agent = "teeenage mutant";
+  //   goThrough = true;
+  // }
 
-  if (goThrough === true) {
-    agentConfig = "ninja turtles";
-  }
+  // if (goThrough === true) {
+  //   agentConfig = "ninja turtles";
+  // }
 
   // let mediation_url = config.mediation_url;
   // let endpoints = ["http://" + config.agent_ip + ":" + port];
