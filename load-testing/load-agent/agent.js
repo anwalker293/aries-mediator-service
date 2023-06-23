@@ -28,6 +28,9 @@ const initializeAgent = async (withMediation, port, agentConfig = "") => {
   let endpoints = ["http://" + config.agent_ip + ":" + port];
 
   if (agentConfig === "") {
+    agent = "helloooo";
+    agentConfig = "hi";
+    return [agent, agentConfig];
     const agentConfig = {
       indyLedgers: [config.ledger],
       label: generateString(14),
