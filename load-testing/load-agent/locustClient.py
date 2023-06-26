@@ -245,8 +245,7 @@ class CustomClient:
         self.run_command({"cmd":"receiveInvitation", "invitationUrl": invite})
 
         line = self.readjsonline()
-        iteration = 0
-
+        raise Exception("line is ", line)
         
 
         # while iteration < 5:
