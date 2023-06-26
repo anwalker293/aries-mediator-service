@@ -244,7 +244,9 @@ class CustomClient:
     def accept_invite(self, invite):
         self.run_command({"cmd":"receiveInvitation", "invitationUrl": invite})
 
-        line = self.readjsonline()
+        line = self.agent.stdout.readline()
+
+        #self.readjsonline()
         raise Exception("line is ", line)
         
 
