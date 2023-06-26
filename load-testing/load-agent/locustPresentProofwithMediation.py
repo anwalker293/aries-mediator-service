@@ -23,6 +23,7 @@ class UserBehaviour(SequentialTaskSet):
         self.client.ensure_is_running()
 
         connection = self.client.accept_invite(self.invite['invitation_url'])
+        print("conn is ", connection)
         self.connection = connection
 
     def receive_credential(self):
