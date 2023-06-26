@@ -73,6 +73,8 @@ const initializeAgent = async (withMediation, port, agentConfig = null) => {
 
     var def = deferred();
 
+    console.log("CONFIGY IS ", agentConfig);
+
     var onConnectedMediation = async (event) => {
       const mediatorConnection =
         await agent.mediationRecipient.findDefaultMediatorConnection();
@@ -93,6 +95,7 @@ const initializeAgent = async (withMediation, port, agentConfig = null) => {
 
     // Initialize the agent
     await agent.initialize();
+    console.log("CONFIG IS ", agentConfig);
 
     // wait for ws to be configured
     value = await Promise.race([TimeDelay, def.promise]);
@@ -111,6 +114,7 @@ const initializeAgent = async (withMediation, port, agentConfig = null) => {
     );
     await agent.initialize();
   }
+
   return [agent, agentConfig];
 };
 
