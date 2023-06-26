@@ -49,11 +49,15 @@ const initializeAgent = async (withMediation, port, agentConfig = null) => {
     };
   }
 
+  console.log("agentConfig is ", agentConfig);
+
   if (withMediation) {
     delete agentConfig["endpoints"];
   } else {
     delete agentConfig["mediatorConnectionsInvite"];
   }
+
+  console.log("agentConfig is ", agentConfig);
 
   // // A new instance of an agent is created here
   // const agent = new ariesCore.Agent({
