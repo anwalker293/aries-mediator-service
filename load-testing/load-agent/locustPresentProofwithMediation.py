@@ -17,12 +17,14 @@ class CustomLocust(User):
 class UserBehaviour(SequentialTaskSet):
     def get_invite(self):
         invite = self.client.issuer_getinvite()
+        print("self.invite is ", invite)
         self.invite = invite
 
     def accept_invite(self):
         self.client.ensure_is_running()
 
         connection = self.client.accept_invite(self.invite['invitation_url'])
+        prit("Connection is ", connection)
         self.connection = connection
 
     def receive_credential(self):
