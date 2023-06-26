@@ -45,8 +45,6 @@ const initializeAgent = async (withMediation, port, agentConfig = null) => {
     };
   }
 
-  console.log("agentConfig is ", agentConfig);
-
   if (withMediation) {
     delete agentConfig["endpoints"];
   } else {
