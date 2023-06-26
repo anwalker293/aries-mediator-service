@@ -73,8 +73,6 @@ const initializeAgent = async (withMediation, port, agentConfig = null) => {
 
     var def = deferred();
 
-    console.log("CONFIGY IS ", agentConfig);
-
     var onConnectedMediation = async (event) => {
       const mediatorConnection =
         await agent.mediationRecipient.findDefaultMediatorConnection();
@@ -87,6 +85,7 @@ const initializeAgent = async (withMediation, port, agentConfig = null) => {
         );
       }
     };
+    console.log("CONFIGY IS ", agentConfig);
 
     agent.events.on(
       ariesCore.TransportEventTypes.OutboundWebSocketOpenedEvent,
