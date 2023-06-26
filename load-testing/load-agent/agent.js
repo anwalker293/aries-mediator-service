@@ -57,7 +57,7 @@ const initializeAgent = async (withMediation, port, agentConfig = null) => {
     dependencies: ariesNode.agentDependencies,
   });
 
-  Register a simple `WebSocket` outbound transport
+  // Register a simple `WebSocket` outbound transport
   agent.registerOutboundTransport(new ariesCore.WsOutboundTransport());
 
   // Register a simple `Http` outbound transport
