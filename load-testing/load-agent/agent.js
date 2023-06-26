@@ -468,7 +468,7 @@ rl.on("line", async (line) => {
         JSON.stringify({ error: 0, result: "Ping Mediator" }) + "\n"
       );
     } else if (command["cmd"] == "receiveInvitation") {
-      let connection = await receiveInvitation(agent, command["invitationUrl"]);
+      connection = await receiveInvitation(agent, command["invitationUrl"]);
 
       process.stdout.write(
         JSON.stringify({
