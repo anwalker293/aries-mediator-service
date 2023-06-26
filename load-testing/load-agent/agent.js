@@ -29,7 +29,7 @@ const initializeAgent = async (withMediation, port, agentConfig = null) => {
   let changeConfig = false;
 
   if (!agentConfig || agentConfig.length === 0) {
-    let agentConfig = {
+    const agentConfig = {
       indyLedgers: [config.ledger],
       label: generateString(14),
       walletConfig: {
