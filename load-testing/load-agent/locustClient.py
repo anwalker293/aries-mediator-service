@@ -156,7 +156,9 @@ class CustomClient:
             self.startup()
 
     def is_running(self):
-        if self.agent:
+        if self.agent and self.agent.poll() is None:
+            return False
+        elif self.agent:
             return True
         return False
 

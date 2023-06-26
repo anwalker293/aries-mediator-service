@@ -41,7 +41,7 @@ class UserBehaviour(SequentialTaskSet):
         
     @task
     def presentation_exchange(self):
-        if True:
+        if not self.client.is_running():
             self.client.shutdown()
             self.on_start(self) 
 
