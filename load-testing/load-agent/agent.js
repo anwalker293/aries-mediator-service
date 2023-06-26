@@ -85,12 +85,12 @@ const initializeAgent = async (withMediation, port, agentConfig = null) => {
         );
       }
     };
-    console.log("CONFIGY IS ", agentConfig);
 
     agent.events.on(
       ariesCore.TransportEventTypes.OutboundWebSocketOpenedEvent,
       onConnectedMediation
     );
+    console.log("CONFIGY IS ", agentConfig);
 
     // Initialize the agent
     await agent.initialize();
