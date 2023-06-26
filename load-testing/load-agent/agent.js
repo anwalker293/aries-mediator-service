@@ -112,6 +112,8 @@ const initializeAgent = async (withMediation, port, agentConfig = null) => {
     await agent.initialize();
   }
 
+  console.log("agentConfigy ", agentConfig);
+
   return [agent, agentConfig];
 };
 
