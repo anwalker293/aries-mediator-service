@@ -31,7 +31,7 @@ class UserBehaviour(SequentialTaskSet):
         credential = self.client.receive_credential(self.invite['connection_id'])
 
     def on_start(self, reinstantiate=False):
-        self.client.startup(withMediation=True, reinstantiate=reinstantiate)
+        self.client.startup(withMediation=True)
         self.get_invite()
         self.accept_invite()
         self.receive_credential()
@@ -43,7 +43,7 @@ class UserBehaviour(SequentialTaskSet):
     def presentation_exchange(self):
         if True:
             self.client.shutdown()
-            self.on_start(self, reinstantiate=True) 
+            self.on_start(self) 
 
         # Need connection id
         presentation = self.client.presentation_exchange(self.invite['connection_id'])
