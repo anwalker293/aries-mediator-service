@@ -17,6 +17,7 @@ class CustomLocust(User):
 class UserBehaviour(SequentialTaskSet):
     def get_invite(self):
         invite = self.client.issuer_getinvite()
+        print("invite is ", invite)
         self.invite = invite
 
     def accept_invite(self):
