@@ -170,7 +170,6 @@ const pingMediator = async (agent) => {
 let receiveInvitation = async (agent, invitationUrl) => {
   // wait for the connection
   let timeout = 2 * 60000; // two minutes
-  console.log("beginning");
   const TimeDelay = new Promise((resolve, reject) => {
     setTimeout(resolve, timeout, false);
   });
@@ -180,7 +179,6 @@ let receiveInvitation = async (agent, invitationUrl) => {
   var onConnection = async (event) => {
     {
       let payload = event.payload;
-      console.log("payloady");
       if (
         payload.connectionRecord.state === ariesCore.DidExchangeState.Completed
       ) {
@@ -205,11 +203,9 @@ let receiveInvitation = async (agent, invitationUrl) => {
     onConnection
   );
 
-  console.log("testy mctest");
   const { outOfBandRecord } = await agent.oob.receiveInvitationFromUrl(
     invitationUrl
   );
-  console.log("out of band ", outOfBandRecord);
 
   // wait for connection
   value = await Promise.race([TimeDelay, def.promise]);
