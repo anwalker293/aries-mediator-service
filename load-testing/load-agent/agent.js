@@ -45,17 +45,17 @@ const initializeAgent = async (withMediation, port, agentConfig = null) => {
     };
   }
 
-  if (withMediation) {
-    delete agentConfig["endpoints"];
-  } else {
-    delete agentConfig["mediatorConnectionsInvite"];
-  }
+  // if (withMediation) {
+  //   delete agentConfig["endpoints"];
+  // } else {
+  //   delete agentConfig["mediatorConnectionsInvite"];
+  // }
 
-  // A new instance of an agent is created here
-  const agent = new ariesCore.Agent({
-    config: agentConfig,
-    dependencies: ariesNode.agentDependencies,
-  });
+  // // A new instance of an agent is created here
+  // const agent = new ariesCore.Agent({
+  //   config: agentConfig,
+  //   dependencies: ariesNode.agentDependencies,
+  // });
 
   // Register a simple `WebSocket` outbound transport
   // agent.registerOutboundTransport(new ariesCore.WsOutboundTransport());
@@ -111,9 +111,7 @@ const initializeAgent = async (withMediation, port, agentConfig = null) => {
   //   );
   //   await agent.initialize();
   // }
-
-  console.log("agentConfigy ", agentConfig);
-
+  console.log(agentConfig);
   return [agent, agentConfig];
 };
 
