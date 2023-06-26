@@ -90,11 +90,9 @@ const initializeAgent = async (withMediation, port, agentConfig = null) => {
       ariesCore.TransportEventTypes.OutboundWebSocketOpenedEvent,
       onConnectedMediation
     );
-    console.log("CONFIGY IS ", agentConfig);
 
     // Initialize the agent
     await agent.initialize();
-    console.log("CONFIG IS ", agentConfig);
 
     // wait for ws to be configured
     value = await Promise.race([TimeDelay, def.promise]);
