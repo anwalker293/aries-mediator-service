@@ -156,10 +156,20 @@ class CustomClient:
             self.startup()
 
     def is_running(self):
-        if self.agent and self.agent.poll() is None:
-            return False
-        elif self.agent:
-            return True
+        # Is the agent started?
+        if not self.agent:
+            return False 
+        
+        # is the agent still running?
+        elif self.agent.poll() is None:
+            # check for closed Pipes
+            if self.agent.stdout.closed or self.agent.stdin.closed:
+                return False 
+            else:
+                return True
+        else:
+           return False
+
         return False
 
     def run_command(self, command):
