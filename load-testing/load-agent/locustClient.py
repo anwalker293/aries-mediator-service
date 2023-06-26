@@ -107,7 +107,7 @@ class CustomClient:
 
             # Create the wallet for the first time
             #self.agentConfig = self.readjsonline()
-            self.agentConfig = self.agent.stdout.readline()
+            self.agentConfig = self.agent.stdout.readline()['result']
 
             # we tried to start the agent and failed
             if self.agent is None or self.agent.poll() is not None: 
@@ -244,9 +244,10 @@ class CustomClient:
     def accept_invite(self, invite):
         self.run_command({"cmd":"receiveInvitation", "invitationUrl": invite})
 
-        line = self.agent.stdout.readline()
+        line = self.readjsonline()
+        #self.agent.stdout.readline()
 
-        #self.readjsonline()
+        #
         raise Exception("line is ", line)
         
 
