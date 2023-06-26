@@ -23,7 +23,6 @@ class UserBehaviour(SequentialTaskSet):
         self.client.ensure_is_running()
 
         connection = self.client.accept_invite(self.invite['invitation_url'])
-        print("conn is ", connection)
         self.connection = connection
 
     def receive_credential(self):
@@ -42,7 +41,7 @@ class UserBehaviour(SequentialTaskSet):
         
     @task
     def presentation_exchange(self):
-        if not self.client.is_running:
+        if not self.client.is_running():
             self.on_start(self, reinstantiate=True) 
 
         # Need connection id
