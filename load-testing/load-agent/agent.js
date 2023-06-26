@@ -445,7 +445,7 @@ rl.on("line", async (line) => {
   try {
     var command = JSON.parse(line);
 
-    if (command["cmd"] == "start" && agent == null) {
+    if (command["cmd"] == "start") {
       [agent, agentConfig] = await initializeAgent(
         command["withMediation"],
         command["port"],
@@ -459,7 +459,6 @@ rl.on("line", async (line) => {
       // } else {
       //   [agent, agentConfig] = await initializeAgent();
       // }
-      console.log("agent is ", agent);
       // process.stdout.write(
       //   JSON.stringify({ error: 0, result: "Initialized agent..." }) + "\n"
       // );
