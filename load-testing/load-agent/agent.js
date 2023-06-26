@@ -219,6 +219,7 @@ let receiveInvitation = async (agent, invitationUrl) => {
     throw "Connection timeout!";
   }
 
+  console.log("out of bandy ", outOfBandRecord);
   return outOfBandRecord;
 };
 
