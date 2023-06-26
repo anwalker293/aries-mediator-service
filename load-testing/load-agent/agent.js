@@ -204,9 +204,11 @@ let receiveInvitation = async (agent, invitationUrl) => {
     onConnection
   );
 
+  console.log("testy mctest");
   const { outOfBandRecord } = await agent.oob.receiveInvitationFromUrl(
     invitationUrl
   );
+  console.log("out of band ", outOfBandRecord);
 
   // wait for connection
   value = await Promise.race([TimeDelay, def.promise]);
