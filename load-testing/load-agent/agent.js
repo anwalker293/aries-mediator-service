@@ -170,7 +170,7 @@ const pingMediator = async (agent) => {
 let receiveInvitation = async (agent, invitationUrl) => {
   // wait for the connection
   let timeout = 2 * 60000; // two minutes
-
+  console.log("beginning");
   const TimeDelay = new Promise((resolve, reject) => {
     setTimeout(resolve, timeout, false);
   });
@@ -180,6 +180,7 @@ let receiveInvitation = async (agent, invitationUrl) => {
   var onConnection = async (event) => {
     {
       let payload = event.payload;
+      console.log("payloady");
       if (
         payload.connectionRecord.state === ariesCore.DidExchangeState.Completed
       ) {
