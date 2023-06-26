@@ -107,7 +107,8 @@ class CustomClient:
 
             # Create the wallet for the first time
             #self.agentConfig = self.readjsonline()
-            self.agentConfig = self.agent.stdout.readline()['result']
+            self.agentConfig = self.agent.stdout.readline()
+            raise Exception("confingy is ", self.agentConfig)
 
             # we tried to start the agent and failed
             if self.agent is None or self.agent.poll() is not None: 
