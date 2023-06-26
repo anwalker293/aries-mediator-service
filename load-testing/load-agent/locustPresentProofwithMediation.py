@@ -41,7 +41,7 @@ class UserBehaviour(SequentialTaskSet):
         
     @task
     def presentation_exchange(self):
-        if not self.client.is_running():
+        if True:
             self.on_start(self, reinstantiate=True) 
 
         # Need connection id
