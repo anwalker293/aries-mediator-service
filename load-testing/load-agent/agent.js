@@ -219,7 +219,6 @@ let receiveInvitation = async (agent, invitationUrl) => {
     throw "Connection timeout!";
   }
 
-  console.log("out of bandy ", outOfBandRecord);
   return outOfBandRecord;
 };
 
@@ -469,7 +468,7 @@ rl.on("line", async (line) => {
         JSON.stringify({ error: 0, result: "Ping Mediator" }) + "\n"
       );
     } else if (command["cmd"] == "receiveInvitation") {
-      connection = await receiveInvitation(agent, command["invitationUrl"]);
+      let connection = await receiveInvitation(agent, command["invitationUrl"]);
 
       process.stdout.write(
         JSON.stringify({
