@@ -247,8 +247,6 @@ class CustomClient:
         line = self.readjsonline()
         #self.agent.stdout.readline()
 
-        #
-        raise Exception("line is ", line)
         
 
         # while iteration < 5:
