@@ -21,16 +21,22 @@ class UserBehaviour(SequentialTaskSet):
 
     def accept_invite(self):
         self.client.ensure_is_running()
+        # if not self.client.is_running():
+        #     self.client.shutdown()
+        #     self.on_start(self)
 
         connection = self.client.accept_invite(self.invite['invitation_url'])
         self.connection = connection
 
     def receive_credential(self):
         self.client.ensure_is_running()
+        # if not self.client.is_running():
+        #     self.client.shutdown()
+        #     self.on_start(self)
 
         credential = self.client.receive_credential(self.invite['connection_id'])
 
-    def on_start(self, reinstantiate=False):
+    def on_start(self):
         self.client.startup(withMediation=True)
         self.get_invite()
         self.accept_invite()
