@@ -379,8 +379,9 @@ class CustomClient:
         #self.agent.stdout.readline()
         try:
             line = self.readjsonline()
-        except Exception:
-            raise AssertionError("line is ", line, " and json is ", line.json())
+        except Exception as e:
+            raise AssertionError("e is ", e)
+            #line is ", line, " and json is ", line.json())
 
     @stopwatch
     def revoke_credential(self, credential):
