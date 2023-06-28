@@ -254,7 +254,10 @@ class CustomClient:
 
     @stopwatch
     def accept_invite(self, invite):
-        self.run_command({"cmd":"receiveInvitation", "invitationUrl": invite})
+        try:
+            self.run_command({"cmd":"receiveInvitation", "invitationUrl": invite})
+        except Exception:
+            self.run_command({"cmd":"receiveInvitation", "invitationUrl": invite})
 
         line = self.readjsonline()
         #self.agent.stdout.readline()
@@ -316,7 +319,15 @@ class CustomClient:
 
     @stopwatch
     def presentation_exchange(self, connection_id):
-        self.run_command({"cmd":"presentationExchange"})
+        try:
+            self.run_command({"cmd":"presentationExchange"})
+        except Exception as es:
+            try:
+                line = self.agent.stdout.readline()
+            except Exception as e:
+                raise AssertionError("e is ", es)
+
+            raise AssertionError("e is ", e)
 
         #line = self.readjsonline()
 
