@@ -506,9 +506,6 @@ rl.on("line", async (line) => {
       handleError("invalid command");
     }
   } catch (e) {
-    if "JSONDecodeError" in e.name {
-        console.log("HELP")
-      }
     handleError(e);
   }
 });
