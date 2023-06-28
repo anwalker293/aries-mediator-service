@@ -320,11 +320,11 @@ class CustomClient:
     @stopwatch
     def presentation_exchange(self, connection_id):
         self.run_command({"cmd":"presentationExchange"})
-        line1 = self.agent.stdout.readline()
-        raise AssertionError("line1 is ", line1)
-        # See if we have a JSONDecodeError
-        if "JSONDecodeError" in line1.json()["result"]:
-            return line1.json()
+        #line1 = self.agent.stdout.readline()
+        #raise AssertionError("line1 is ", line1)
+        ## See if we have a JSONDecodeError
+        #if "JSONDecodeError" in line1.json()["result"]:
+        #    return line1.json()
 
         #line = self.readjsonline()
 
