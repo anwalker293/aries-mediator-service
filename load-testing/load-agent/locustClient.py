@@ -374,7 +374,7 @@ class CustomClient:
             time.sleep(1)
         
         if g.json()['verified']!='true':
-            raise AssertionError(f"Presentation was not successfully verified. Presentation in state {g.json['state']}")
+            raise AssertionError(f"Presentation was not successfully verified. Presentation in state {g.json()['state']}")
 
         #self.agent.stdout.readline()
         try:
