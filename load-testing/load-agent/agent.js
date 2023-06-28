@@ -439,13 +439,7 @@ const handleError = async (e) => {
 
 rl.on("line", async (line) => {
   try {
-    try {
-      var command = JSON.parse(line);
-    } catch (e) {
-      if "JSONDecodeError" in e.name {
-        console.log("HELP")
-      }
-    }
+    var command = JSON.parse(line);
 
     if (command["cmd"] == "start") {
       [agent, agentConfig] = await initializeAgent(
@@ -512,6 +506,9 @@ rl.on("line", async (line) => {
       handleError("invalid command");
     }
   } catch (e) {
+    if "JSONDecodeError" in e.name {
+        console.log("HELP")
+      }
     handleError(e);
   }
 });
