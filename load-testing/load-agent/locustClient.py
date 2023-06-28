@@ -378,7 +378,7 @@ class CustomClient:
 
         #self.agent.stdout.readline()
         try:
-            line = self.readjsonline()
+            line = self.agent.stdout.readline()
         except Exception as e:
             raise AssertionError("e is ", e)
             #line is ", line, " and json is ", line.json())
