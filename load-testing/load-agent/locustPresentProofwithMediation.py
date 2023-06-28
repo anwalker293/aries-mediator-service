@@ -47,12 +47,26 @@ class UserBehaviour(SequentialTaskSet):
         
     @task
     def presentation_exchange(self):
-        if not self.client.is_running():
-            self.client.shutdown()
-            self.on_start(self) 
+        presentation_not_complete = True
+        restart = False
+        while presentation_not_complete:
+            if not self.client.is_running() or restart:
+                self.client.shutdown()
+                self.on_start(self)
+                
+            restart = False
 
-        # Need connection id
-        presentation = self.client.presentation_exchange(self.invite['connection_id'])
+            # Need connection id
+            try:
+                presentation = self.client.presentation_exchange(self.invite['connection_id'])
+                presentation_not_complete = False
+            except Exception as e:
+                if "JSONDecodeError" in e:
+                    # Try again
+                    restart = True
+                    pass
+                else:
+                    raise AssertionError("Error is : ", e)
 
 class Issue(CustomLocust):
     tasks = [UserBehaviour]
