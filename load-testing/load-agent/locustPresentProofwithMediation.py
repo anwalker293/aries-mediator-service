@@ -60,9 +60,8 @@ class UserBehaviour(SequentialTaskSet):
             try:
                 presentation = self.client.presentation_exchange(self.invite['connection_id'])
                 presentation_not_complete = False
-            except Exception as e:
-                if "JSONDecodeError" in e:
-                    # Try again
+            except AssertionError as e:
+                if "JSONDecodeError" in presentation["result"]:
                     restart = True
                     pass
                 else:

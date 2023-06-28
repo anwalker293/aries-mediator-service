@@ -506,6 +506,11 @@ rl.on("line", async (line) => {
       handleError("invalid command");
     }
   } catch (e) {
+    if (e instanceof JSONDecodeError) {
+      process.stdout.write(
+        JSON.stringify({ error: 0, result: "JSONDecodeError received" }) + "\n"
+      );
+    }
     handleError(e);
   }
 });

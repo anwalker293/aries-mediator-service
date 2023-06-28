@@ -319,15 +319,11 @@ class CustomClient:
 
     @stopwatch
     def presentation_exchange(self, connection_id):
-        try:
-            self.run_command({"cmd":"presentationExchange"})
-        except Exception as es:
-            try:
-                line = self.agent.stdout.readline()
-            except Exception as e:
-                raise AssertionError("e is ", es)
-
-            raise AssertionError("e is ", e)
+        self.run_command({"cmd":"presentationExchange"})
+        line1 = self.agent.stdout.readline()
+        # See if we have a JSONDecodeError
+        if "JSONDecodeError" in line1.json()["result"]:
+            return line1.json()
 
         #line = self.readjsonline()
 
@@ -388,11 +384,9 @@ class CustomClient:
             raise AssertionError(f"Presentation was not successfully verified. Presentation in state {g.json()['state']}")
 
         #self.agent.stdout.readline()
-        try:
-            line = self.agent.stdout.readline()
-        except Exception as e:
-            raise AssertionError("e is ", e)
-            #line is ", line, " and json is ", line.json())
+        line2 = self.agent.stdout.readline()
+        if "JSONDecodeError" in line2.json()["result"]:
+            return line2.json()
 
     @stopwatch
     def revoke_credential(self, credential):
