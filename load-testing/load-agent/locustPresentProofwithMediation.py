@@ -52,7 +52,7 @@ class UserBehaviour(SequentialTaskSet):
         while presentation_not_complete:
             if not self.client.is_running() or restart:
                 self.client.shutdown()
-                self.on_start(self)
+                self.on_start()
                 
             restart = False
 
