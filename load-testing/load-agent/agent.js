@@ -486,7 +486,7 @@ rl.on("line", async (line) => {
     } else if (command["cmd"] == "presentationExchange") {
       await presentationExchange(agent);
 
-      process.stdoutwrite(
+      process.stdout.write(
         JSON.stringify({ error: 0, result: "Presentation Exchange" }) + "\n"
       );
     } else if (command["cmd"] == "receiveMessage") {

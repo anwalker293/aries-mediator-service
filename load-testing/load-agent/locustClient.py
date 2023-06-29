@@ -385,11 +385,15 @@ class CustomClient:
             raise AssertionError(f"Presentation was not successfully verified. Presentation in state {g.json()['state']}")
 
         #self.agent.stdout.readline()
-        line2 = self.agent.stdout.readline()
-        #raise AssertionError("line2 is ", line2)
-        if "JSONDecodeError" in line2:
-            raise AssertionError("line 2 is ", line2)
-            return line2.json()
+        line = self.readjsonline()
+        # try:
+        #     line2 = self.agent.stdout.readline()
+        # except Exception as e:
+        #     raise AssertionError("error is e ")
+        # #raise AssertionError("line2 is ", line2)
+        # if "JSONDecodeError" in line2:
+        #     raise AssertionError("line 2 is ", line2)
+        #     return line2.json()
 
     @stopwatch
     def revoke_credential(self, credential):
