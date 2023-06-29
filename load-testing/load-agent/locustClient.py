@@ -387,7 +387,7 @@ class CustomClient:
         #self.agent.stdout.readline()
         line2 = self.agent.stdout.readline()
         #raise AssertionError("line2 is ", line2)
-        if "JSONDecodeError" in line2.json()["result"]:
+        if "JSONDecodeError" in line2:
             raise AssertionError("line 2 is ", line2)
             return line2.json()
 
