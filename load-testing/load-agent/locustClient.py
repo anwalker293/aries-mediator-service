@@ -1,4 +1,5 @@
 from locust import events
+from json.decoder import JSONDecodeError
 import time
 import inspect
 import json
@@ -186,13 +187,18 @@ class CustomClient:
     def readjsonline(self):
         try:
             line = None
+            raw_line_stdout = None
 
             if not self.agent.stdout.closed:
                 q = select.poll()
                 q.register(self.agent.stdout,select.POLLIN)
 
                 if q.poll(READ_TIMEOUT_SECONDS * 1000):
-                    line = json.loads(self.agent.stdout.readline())
+                    raw_line_stdout = self.agent.stdout.readline()
+                    try:
+                        line = json.loads(raw_line_stdout)
+                    except JSONDecodeError as e:
+                        raise Exception("Received JSONDecodeError. Raw content: ", raw_line_stdout)
                 else:
                     raise Exception("Read Timeout")
 
