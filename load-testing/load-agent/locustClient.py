@@ -197,8 +197,10 @@ class CustomClient:
                     raw_line_stdout = self.agent.stdout.readline()
                     try:
                         line = json.loads(raw_line_stdout)
-                    except JSONDecodeError as e:
-                        raise Exception("Received JSONDecodeError. Raw content: ", raw_line_stdout)
+                    except Exception as e:
+                        raise Exception("yo we encountered ", e)
+                    # except JSONDecodeError as e:
+                    #     raise Exception("Received JSONDecodeError. Raw content: ", raw_line_stdout)
                 else:
                     raise Exception("Read Timeout")
 
