@@ -368,10 +368,13 @@ class CustomClient:
 
         # raise Exception("r is ", r.json())
 
-        if r.status_code != 200:
-            raise Exception("r is ", r.json())
-
-        r = r.json()
+        try:
+            if r.status_code != 200:
+                raise Exception("r is ", r.json())
+            r = r.json()
+        except JSONDecodeError as e:
+            raise Exception("r was the culprit ", r)
+        
     
         # Need to get presentation exchange id
 
@@ -393,7 +396,7 @@ class CustomClient:
         
             if g.json()['verified']!='true':
                 raise AssertionError(f"Presentation was not successfully verified. Presentation in state {g.json()['state']}")
-
+        
         except JSONDecodeError as e:
             raise Exception("We found it! ", g)
 
