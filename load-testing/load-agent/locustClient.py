@@ -18,7 +18,10 @@ from gevent import lock as gevent_lock
 from uuid import uuid4
 
 SHUTDOWN_TIMEOUT_SECONDS=10
-READ_TIMEOUT_SECONDS = int(os.getenv('READ_TIMEOUT_SECONDS', 120))
+# Generic
+READ_TIMEOUT_SECONDS = 120
+# How long to wait for verified = true
+READ_TIMEOUT_VERIFIED_SECONDS = int(os.getenv('READ_TIMEOUT_SECONDS', 10))
 ERRORS_BEFORE_RESTART=10
 START_PORT= json.loads(os.getenv('START_PORT'))
 END_PORT= json.loads(os.getenv('END_PORT'))
@@ -377,7 +380,7 @@ class CustomClient:
 
         try:
             iteration = 0
-            while iteration < READ_TIMEOUT_SECONDS:
+            while iteration < READ_TIMEOUT_VERIFIED_SECONDS:
                 g = requests.get(
                     os.getenv('ISSUER_URL') + f'/present-proof/records/{pres_ex_id}',
                     headers=headers
