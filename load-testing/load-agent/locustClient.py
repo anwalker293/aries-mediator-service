@@ -18,7 +18,7 @@ from gevent import lock as gevent_lock
 from uuid import uuid4
 
 SHUTDOWN_TIMEOUT_SECONDS=10
-READ_TIMEOUT_SECONDS=120
+READ_TIMEOUT_SECONDS = int(os.getenv('READ_TIMEOUT_SECONDS', 120))
 ERRORS_BEFORE_RESTART=10
 START_PORT= json.loads(os.getenv('START_PORT'))
 END_PORT= json.loads(os.getenv('END_PORT'))
@@ -198,17 +198,17 @@ class CustomClient:
                     try:
                         line = json.loads(raw_line_stdout)
                     except Exception as e:
-                        raise Exception("yo we encountered ", e)
+                        raise Exception("An error was encountered while parsing stdout: ", e)
                     # except JSONDecodeError as e:
                     #     raise Exception("Received JSONDecodeError. Raw content: ", raw_line_stdout)
                 else:
-                    raise Exception("Read Timeout")
+                    raise Exception("Read Timeout.")
 
             if not line:
-                raise Exception("invalid read")
+                raise Exception("Invalid read.")
 
             if line['error'] != 0:
-                raise Exception("line is ", line)
+                raise Exception("Error encountered within load testing agent: ", line)
                 #raise Exception(line['result'])
 
             return line
@@ -234,11 +234,12 @@ class CustomClient:
             headers=headers
             )
         try:
-            try_var = r.json()['invitation_url']
+            # Does the invitation url exist?
+            invitation_url = r.json()['invitation_url']
         except Exception: 
             raise Exception("r is ", r.json())
         if r.status_code != 200:
-            raise Exception(r.content)
+            raise Exception("Request was not successful: ", r.content)
             
         r = r.json()
 
@@ -254,7 +255,7 @@ class CustomClient:
             headers=headers
             )
         if r.status_code != 200:
-            raise Exception(r.content)
+            raise Exception("Request was not successful: ", r.content)
 
         r = r.json()
 
@@ -269,8 +270,6 @@ class CustomClient:
 
         line = self.readjsonline()
         #self.agent.stdout.readline()
-
-        
 
         # while iteration < 5:
         #     try:
@@ -317,7 +316,7 @@ class CustomClient:
             headers=headers
             )
         if r.status_code != 200:
-            raise Exception(r.content)
+            raise Exception("Request was not successful: ", r.content)
             
         r = r.json()
 
@@ -366,50 +365,29 @@ class CustomClient:
             }, 
             headers=headers)
 
-        # raise Exception("r is ", r.json())
-
         try:
             if r.status_code != 200:
-                raise Exception("r is ", r.json())
-            r = r.json()
+                raise Exception("Request was not successful: ", r.content)
         except JSONDecodeError as e:
-            raise Exception("r was the culprit ", r)
+            raise Exception("Encountered JSONDecodeError while parsing the request: ", r)
         
-    
-        # Need to get presentation exchange id
-
+        line = self.readjsonline()
+ 
         pres_ex_id = r['presentation_exchange_id']
-        # Want to do a for loop
-        iteration = 0 
+
         try:
-            while iteration < 10: 
+            iteration = 0
+            while iteration < READ_TIMEOUT_SECONDS:
                 g = requests.get(
                     os.getenv('ISSUER_URL') + f'/present-proof/records/{pres_ex_id}',
                     headers=headers
                 )
-                if g.json()['state']!='request_sent' and g.json()['state']!='presentation_received':
-                    'request_sent' and g.json()['state']!='presentation_received'
-                    break 
-                iteration += 1
-                time.sleep(1)
-        
-        
+
             if g.json()['verified']!='true':
                 raise AssertionError(f"Presentation was not successfully verified. Presentation in state {g.json()['state']}")
         
         except JSONDecodeError as e:
-            raise Exception("We found it! ", g)
-
-        #self.agent.stdout.readline()
-        line = self.readjsonline()
-        # try:
-        #     line2 = self.agent.stdout.readline()
-        # except Exception as e:
-        #     raise AssertionError("error is e ")
-        # #raise AssertionError("line2 is ", line2)
-        # if "JSONDecodeError" in line2:
-        #     raise AssertionError("line 2 is ", line2)
-        #     return line2.json()
+            raise Exception("Encountered JSONDecodeError while getting presentation: ", g)
 
     @stopwatch
     def revoke_credential(self, credential):
@@ -434,7 +412,7 @@ class CustomClient:
             headers=headers
             )
         if r.status_code != 200:
-            raise Exception(r.content)
+            raise Exception("Request was not successful: ", r.content)
 
     @stopwatch
     def msg_client(self, connection_id):
