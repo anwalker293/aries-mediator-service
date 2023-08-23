@@ -22,6 +22,7 @@ READ_TIMEOUT_SECONDS=120
 ERRORS_BEFORE_RESTART=10
 START_PORT= json.loads(os.getenv('START_PORT'))
 END_PORT= json.loads(os.getenv('END_PORT'))
+MESSAGE_TO_SEND=os.getenv('MESSAGE_TO_SEND')
 class PortManager:
     def __init__(self):
         self.lock = gevent_lock.BoundedSemaphore()
@@ -375,7 +376,7 @@ class CustomClient:
         except JSONDecodeError as e:
             raise Exception("r was the culprit ", r)
         
-    
+        line = self.readjsonline()
         # Need to get presentation exchange id
 
         pres_ex_id = r['presentation_exchange_id']
@@ -401,7 +402,6 @@ class CustomClient:
             raise Exception("We found it! ", g)
 
         #self.agent.stdout.readline()
-        line = self.readjsonline()
         # try:
         #     line2 = self.agent.stdout.readline()
         # except Exception as e:
@@ -442,11 +442,12 @@ class CustomClient:
 
         headers = json.loads(os.getenv('ISSUER_HEADERS'))
         headers['Content-Type'] = 'application/json'
+        print(f"MESSAGE_TO_SEND: {MESSAGE_TO_SEND}")
 
         r = requests.post(
             os.getenv('ISSUER_URL') + '/connections/' + connection_id + '/send-message', 
             json={
-                "content": "ping"
+                "content": MESSAGE_TO_SEND
             },
             headers=headers
             )

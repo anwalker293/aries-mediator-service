@@ -16,12 +16,12 @@ class CustomLocust(User):
 
 class UserBehaviour(SequentialTaskSet):
     def on_start(self):
-        while not self.client.is_running():
-            self.client.startup(withMediation=True)
-
+        self.client.startup(withMediation=True)
         self.get_invite()
-
         self.accept_invite()
+
+    def on_stop(self):
+        self.client.shutdown()
 
     def get_invite(self):
         invite = self.client.issuer_getinvite()
@@ -33,14 +33,13 @@ class UserBehaviour(SequentialTaskSet):
         connection = self.client.accept_invite(self.invite['invitation_url'])
         self.connection = connection
 
-    def on_stop(self):
-        self.client.shutdown()
-
     @task
-    def msg_client(self):
-        self.client.msg_client(self.invite['connection_id'])
+    def receive_credential(self):
+        self.client.ensure_is_running()
 
-class MediatorMsg(CustomLocust):
+        credential = self.client.receive_credential(self.invite['connection_id'])
+
+class Issue(CustomLocust):
     tasks = [UserBehaviour]
     wait_time = between(float(os.getenv('LOCUST_MIN_WAIT',0.1)), float(os.getenv('LOCUST_MAX_WAIT',1)))
 #    host = "example.com"
