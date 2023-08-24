@@ -196,21 +196,23 @@ class CustomClient:
             self.shutdown()
             raise e
 
-     def readjsonline(self):
+    def readjsonline(self):
         try:
             line = None
             raw_line_stdout = None
 
             if not self.agent.stdout.closed:
                 q = select.poll()
-                q.register(self.agent.stdout,select.POLLIN)
+                q.register(self.agent.stdout, select.POLLIN)
 
                 if q.poll(READ_TIMEOUT_SECONDS * 1000):
                     raw_line_stdout = self.agent.stdout.readline()
                     try:
                         line = json.loads(raw_line_stdout)
                     except Exception as e:
-                        raise Exception("An error was encountered while parsing stdout: ", e)
+                        raise Exception(
+                            "An error was encountered while parsing stdout: ", e
+                        )
                     # except JSONDecodeError as e:
                     #     raise Exception("Received JSONDecodeError. Raw content: ", raw_line_stdout)
                 else:
@@ -219,15 +221,15 @@ class CustomClient:
             if not line:
                 raise Exception("Invalid read.")
 
-            if line['error'] != 0:
+            if line["error"] != 0:
                 raise Exception("Error encountered within load testing agent: ", line)
-                #raise Exception(line['result'])
+                # raise Exception(line['result'])
 
             return line
         except Exception as e:
             self.errors += 1
             if self.errors > ERRORS_BEFORE_RESTART:
-                self.shutdown() ## if we are in bad state we may need to restart...
+                self.shutdown()  ## if we are in bad state we may need to restart...
             raise e
 
     @stopwatch
