@@ -10,14 +10,16 @@ services:
     user: root 
     tty: true
     command: >
-      locust -f ${LOCUST_FILES}
+      locust -f ${LOCUST_FILES} --master --master-bind-port=8090
     ports:
       - "8089:8089"
+      - "8090:8090"
       - "${START_PORT}-${END_PORT}:${START_PORT}-${END_PORT}"
     environment: 
       - NODE_ENV=${NODE_ENV}
       - BROWSER=none  # don't open the web browser
       - MEDIATION_URL=${MEDIATION_URL}
+      - MASTER_HOST=${MASTER_HOST}
       - LOCUST_MIN_WAIT=${LOCUST_MIN_WAIT} # time between pings
       - LOCUST_MAX_WAIT=${LOCUST_MAX_WAIT} # time between pings
       - ISSUER_URL=${ISSUER_URL}
