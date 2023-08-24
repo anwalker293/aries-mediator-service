@@ -14,18 +14,19 @@ from gevent import lock as gevent_lock
 
 from uuid import uuid4
 
-SHUTDOWN_TIMEOUT_SECONDS=10
-READ_TIMEOUT_SECONDS=120 # stdout feedback
-ERRORS_BEFORE_RESTART=10
+SHUTDOWN_TIMEOUT_SECONDS = 10
+READ_TIMEOUT_SECONDS = 120  # stdout feedback
+ERRORS_BEFORE_RESTART = 10
 # How long to wait for verified = true state
-VERIFIED_TIMEOUT_SECONDS=os.getenv('VERIFIED_TIMEOUT_SECONDS')
-START_PORT= json.loads(os.getenv('START_PORT'))
-END_PORT= json.loads(os.getenv('END_PORT'))
+VERIFIED_TIMEOUT_SECONDS = os.getenv("VERIFIED_TIMEOUT_SECONDS")
+START_PORT = json.loads(os.getenv("START_PORT"))
+END_PORT = json.loads(os.getenv("END_PORT"))
+
 
 class PortManager:
     def __init__(self):
         self.lock = gevent_lock.BoundedSemaphore()
-        self.ports = list(range(START_PORT,END_PORT))
+        self.ports = list(range(START_PORT, END_PORT))
 
     def getPort(self):
         self.lock.acquire()
@@ -42,7 +43,9 @@ class PortManager:
         finally:
             self.lock.release()
 
+
 portmanager = PortManager()
+
 
 def stopwatch(func):
     def wrapper(*args, **kwargs):
@@ -56,20 +59,25 @@ def stopwatch(func):
             result = func(*args, **kwargs)
         except Exception as e:
             total = int((time.time() - start) * 1000)
-            events.request_failure.fire(request_type="TYPE",
-                                        name=file_name + '_' + task_name,
-                                        response_time=total,
-                                        exception=e,
-                                        response_length=0)
+            events.request_failure.fire(
+                request_type="TYPE",
+                name=file_name + "_" + task_name,
+                response_time=total,
+                exception=e,
+                response_length=0,
+            )
         else:
             total = int((time.time() - start) * 1000)
-            events.request_success.fire(request_type="TYPE",
-                                        name=file_name + '_' + task_name,
-                                        response_time=total,
-                                        response_length=0)
+            events.request_success.fire(
+                request_type="TYPE",
+                name=file_name + "_" + task_name,
+                response_time=total,
+                response_length=0,
+            )
         return result
 
     return wrapper
+
 
 class CustomClient:
     def __init__(self, host):
@@ -82,7 +90,7 @@ class CustomClient:
     _locust_environment = None
 
     @stopwatch
-    def startup(self, withMediation=True):
+    def startup(self, withMediation=True, reinstantiate=False):
         if (not self.withMediation) and self.withMediation is None:
             self.withMediation = withMediation
         try:
@@ -92,28 +100,36 @@ class CustomClient:
             self.port = portmanager.getPort()
 
             self.errors = 0
-            self.agent = subprocess.Popen(['node', 'agent.js'], 
+            self.agent = subprocess.Popen(
+                ["node", "agent.js"],
                 bufsize=0,
-                universal_newlines=True, 
-                stdout=subprocess.PIPE, 
+                universal_newlines=True,
+                stdout=subprocess.PIPE,
                 stdin=subprocess.PIPE,
-                shell=False)
+                shell=False,
+            )
 
-            self.run_command({
-                "cmd": "start", 
-                "withMediation": self.withMediation,
-                "port": self.port
-            })
+            # Optional: Can pass in agent wallet configuration
+            self.run_command(
+                {
+                    "cmd": "start",
+                    "withMediation": self.withMediation,
+                    "port": self.port,
+                    "agentConfig": self.agentConfig if reinstantiate else None,
+                }
+            )
 
-            line = self.readjsonline()
+            # Create the wallet for the first time
+            self.agentConfig = self.readjsonline()["result"]
+            # self.agentConfig = self.agent.stdout.readline()
 
             # we tried to start the agent and failed
-            if self.agent is None or self.agent.poll() is not None: 
-                raise Exception('unable to start')
+            if self.agent is None or self.agent.poll() is not None:
+                raise Exception("Unable to start")
         except Exception as e:
             self.shutdown()
             raise e
-        
+
     def shutdown(self):
         # Read output until process closes
 
@@ -124,7 +140,7 @@ class CustomClient:
 
             # We write the command by hand here because if we call the cmd function
             # above we could end up in an infinite loop on shutdown
-            self.agent.stdin.write(json.dumps({"cmd":"shutdown"}))
+            self.agent.stdin.write(json.dumps({"cmd": "shutdown"}))
             self.agent.stdin.write("\n")
             self.agent.stdin.flush()
 
@@ -142,7 +158,7 @@ class CustomClient:
         # Is the agent started?
         if not self.agent:
             self.startup()
-        
+
         # is the agent still running?
         elif self.agent.poll() is None:
             # check for closed Pipes
@@ -154,8 +170,20 @@ class CustomClient:
             self.startup()
 
     def is_running(self):
-        if self.agent:
-            return True
+        # Is the agent started?
+        if not self.agent:
+            return False
+
+        # is the agent still running?
+        elif self.agent.poll() is None:
+            # check for closed Pipes
+            if self.agent.stdout.closed or self.agent.stdin.closed:
+                return False
+            else:
+                return True
+        else:
+            return False
+
         return False
 
     def run_command(self, command):
@@ -168,25 +196,31 @@ class CustomClient:
             self.shutdown()
             raise e
 
-
-    def readjsonline(self):
+     def readjsonline(self):
         try:
             line = None
+            raw_line_stdout = None
 
             if not self.agent.stdout.closed:
                 q = select.poll()
                 q.register(self.agent.stdout,select.POLLIN)
 
                 if q.poll(READ_TIMEOUT_SECONDS * 1000):
-                    line = json.loads(self.agent.stdout.readline())
+                    raw_line_stdout = self.agent.stdout.readline()
+                    try:
+                        line = json.loads(raw_line_stdout)
+                    except Exception as e:
+                        raise Exception("An error was encountered while parsing stdout: ", e)
+                    # except JSONDecodeError as e:
+                    #     raise Exception("Received JSONDecodeError. Raw content: ", raw_line_stdout)
                 else:
-                    raise Exception("Read Timeout")
+                    raise Exception("Read Timeout.")
 
             if not line:
-                raise Exception("invalid read")
+                raise Exception("Invalid read.")
 
             if line['error'] != 0:
-                raise Exception("line is ", line)
+                raise Exception("Error encountered within load testing agent: ", line)
                 #raise Exception(line['result'])
 
             return line
@@ -198,39 +232,39 @@ class CustomClient:
 
     @stopwatch
     def ping_mediator(self):
-        self.run_command({"cmd":"ping_mediator"})
+        self.run_command({"cmd": "ping_mediator"})
 
         line = self.readjsonline()
 
     @stopwatch
     def issuer_getinvite(self):
-        headers = json.loads(os.getenv('ISSUER_HEADERS'))
-        headers['Content-Type'] = 'application/json'
+        headers = json.loads(os.getenv("ISSUER_HEADERS"))
+        headers["Content-Type"] = "application/json"
         r = requests.post(
-            os.getenv('ISSUER_URL') + '/connections/create-invitation?auto_accept=true', 
-            json={ "metadata": {}, "my_label": "Test" },
-            headers=headers
-            )
+            os.getenv("ISSUER_URL") + "/connections/create-invitation?auto_accept=true",
+            json={"metadata": {}, "my_label": "Test"},
+            headers=headers,
+        )
         try:
-            try_var = r.json()['invitation_url']
-        except Exception: 
-            raise Exception("r is ", r.json())
+            try_var = r.json()["invitation_url"]
+        except Exception:
+            raise Exception("Failed to get invitation url. Request: ", r.json())
         if r.status_code != 200:
             raise Exception(r.content)
-            
+
         r = r.json()
 
         return r
 
     @stopwatch
     def issuer_getliveness(self):
-        headers = json.loads(os.getenv('ISSUER_HEADERS'))
-        headers['Content-Type'] = 'application/json'
+        headers = json.loads(os.getenv("ISSUER_HEADERS"))
+        headers["Content-Type"] = "application/json"
         r = requests.get(
-            os.getenv('ISSUER_URL') + '/status', 
-            json={ "metadata": {}, "my_label": "Test" },
-            headers=headers
-            )
+            os.getenv("ISSUER_URL") + "/status",
+            json={"metadata": {}, "my_label": "Test"},
+            headers=headers,
+        )
         if r.status_code != 200:
             raise Exception(r.content)
 
@@ -240,47 +274,46 @@ class CustomClient:
 
     @stopwatch
     def accept_invite(self, invite):
-        self.run_command({"cmd":"receiveInvitation", "invitationUrl": invite})
+        self.run_command({"cmd": "receiveInvitation", "invitationUrl": invite})
 
         line = self.readjsonline()
         iteration = 0
 
-        return line['connection']
+        return line["connection"]
 
     @stopwatch
     def receive_credential(self, connection_id):
-        self.run_command({"cmd":"receiveCredential"})
+        self.run_command({"cmd": "receiveCredential"})
 
-        headers = json.loads(os.getenv('ISSUER_HEADERS'))
-        headers['Content-Type'] = 'application/json'
+        headers = json.loads(os.getenv("ISSUER_HEADERS"))
+        headers["Content-Type"] = "application/json"
 
-        issuer_did = os.getenv('CRED_DEF').split(':')[0]
-        schema_parts = os.getenv('SCHEMA').split(':')
-
+        issuer_did = os.getenv("CRED_DEF").split(":")[0]
+        schema_parts = os.getenv("SCHEMA").split(":")
 
         r = requests.post(
-            os.getenv('ISSUER_URL') + '/issue-credential/send', 
+            os.getenv("ISSUER_URL") + "/issue-credential/send",
             json={
                 "auto_remove": True,
                 "comment": "Performance Issuance",
                 "connection_id": connection_id,
-                "cred_def_id": os.getenv('CRED_DEF'),
+                "cred_def_id": os.getenv("CRED_DEF"),
                 "credential_proposal": {
                     "@type": "issue-credential/1.0/credential-preview",
-                    "attributes": json.loads(os.getenv('CRED_ATTR'))
+                    "attributes": json.loads(os.getenv("CRED_ATTR")),
                 },
                 "issuer_did": issuer_did,
-                "schema_id":  os.getenv('SCHEMA'),
+                "schema_id": os.getenv("SCHEMA"),
                 "schema_issuer_did": schema_parts[0],
                 "schema_name": schema_parts[2],
                 "schema_version": schema_parts[3],
-                "trace": True
+                "trace": True,
             },
-            headers=headers
-            )
+            headers=headers,
+        )
         if r.status_code != 200:
             raise Exception(r.content)
-            
+
         r = r.json()
 
         line = self.readjsonline()
@@ -289,112 +322,115 @@ class CustomClient:
 
     @stopwatch
     def presentation_exchange(self, connection_id):
-        self.run_command({"cmd":"presentationExchange"})
+        self.run_command({"cmd": "presentationExchange"})
 
         # From verification side
-        headers = json.loads(os.getenv('ISSUER_HEADERS')) # headers same
-        headers['Content-Type'] = 'application/json'
+        headers = json.loads(os.getenv("ISSUER_HEADERS"))  # headers same
+        headers["Content-Type"] = "application/json"
 
-        verifier_did = os.getenv('CRED_DEF').split(':')[0]
-        schema_parts = os.getenv('SCHEMA').split(':')
+        verifier_did = os.getenv("CRED_DEF").split(":")[0]
+        schema_parts = os.getenv("SCHEMA").split(":")
 
         # Might need to change nonce
         r = requests.post(
-            os.getenv('ISSUER_URL') + '/present-proof/send-request', 
+            os.getenv("ISSUER_URL") + "/present-proof/send-request",
             json={
                 "auto_verify": True,
                 "comment": "Performance Verification",
                 "connection_id": connection_id,
                 "proof_request": {
                     "name": "PerfScore",
-                    "requested_attributes": {
-                        str(uuid4()): {
-                            "name": "score"
-                        }
-                    },
-                    "requested_predicates": {}, 
-                    "version": "1.0"
+                    "requested_attributes": {str(uuid4()): {"name": "score"}},
+                    "requested_predicates": {},
+                    "version": "1.0",
                 },
-                "trace": True 
-            }, 
-            headers=headers)
-        
+                "trace": True,
+            },
+            headers=headers,
+        )
+
         try:
             if r.status_code != 200:
                 raise Exception("Request was not successful: ", r.content)
         except JSONDecodeError as e:
-            raise Exception("Encountered JSONDecodeError while parsing the request: ", r)
+            raise Exception(
+                "Encountered JSONDecodeError while parsing the request: ", r
+            )
 
         line = self.readjsonline()
-        #r = r.json()
-    
+        # r = r.json()
+
         # Need to get presentation exchange id
-        pres_ex_id = r['presentation_exchange_id']
+        pres_ex_id = r["presentation_exchange_id"]
 
         try:
-            iteration = 0 
-            while iteration < VERIFIED_TIMEOUT_SECONDS: 
+            iteration = 0
+            while iteration < VERIFIED_TIMEOUT_SECONDS:
                 g = requests.get(
-                    os.getenv('ISSUER_URL') + f'/present-proof/records/{pres_ex_id}',
-                    headers=headers
+                    os.getenv("ISSUER_URL") + f"/present-proof/records/{pres_ex_id}",
+                    headers=headers,
                 )
-                if g.json()['state']!='request_sent' and g.json()['state']!='presentation_received':
-                    'request_sent' and g.json()['state']!='presentation_received'
-                    break 
+                if (
+                    g.json()["state"] != "request_sent"
+                    and g.json()["state"] != "presentation_received"
+                ):
+                    "request_sent" and g.json()["state"] != "presentation_received"
+                    break
                 iteration += 1
                 time.sleep(1)
-            
-            if g.json()['verified']!='true':
-                raise AssertionError(f"Presentation was not successfully verified. Presentation in state {g.json['state']}")
+
+            if g.json()["verified"] != "true":
+                raise AssertionError(
+                    f"Presentation was not successfully verified. Presentation in state {g.json['state']}"
+                )
 
         except JSONDecodeError as e:
-            raise Exception("Encountered JSONDecodeError while getting the presentation record: ", g)
+            raise Exception(
+                "Encountered JSONDecodeError while getting the presentation record: ", g
+            )
 
         self.agent.stdout.readline()
-        #line = self.readjsonline()
+        # line = self.readjsonline()
 
     @stopwatch
     def revoke_credential(self, credential):
-        headers = json.loads(os.getenv('ISSUER_HEADERS'))
-        headers['Content-Type'] = 'application/json'
+        headers = json.loads(os.getenv("ISSUER_HEADERS"))
+        headers["Content-Type"] = "application/json"
 
-        issuer_did = os.getenv('CRED_DEF').split(':')[0]
-        schema_parts = os.getenv('SCHEMA').split(':')
+        issuer_did = os.getenv("CRED_DEF").split(":")[0]
+        schema_parts = os.getenv("SCHEMA").split(":")
 
         time.sleep(1)
 
         r = requests.post(
-            os.getenv('ISSUER_URL') + '/revocation/revoke', 
+            os.getenv("ISSUER_URL") + "/revocation/revoke",
             json={
                 "comment": "load test",
-                "connection_id": credential['connection_id'],
-                "cred_ex_id": credential['credential_exchange_id'],
+                "connection_id": credential["connection_id"],
+                "cred_ex_id": credential["credential_exchange_id"],
                 "notify": True,
                 "notify_version": "v1_0",
-                "publish": True
+                "publish": True,
             },
-            headers=headers
-            )
+            headers=headers,
+        )
         if r.status_code != 200:
             raise Exception(r.content)
 
     @stopwatch
     def msg_client(self, connection_id):
-        self.run_command({"cmd":"receiveMessage"})
+        self.run_command({"cmd": "receiveMessage"})
 
-        headers = json.loads(os.getenv('ISSUER_HEADERS'))
-        headers['Content-Type'] = 'application/json'
+        headers = json.loads(os.getenv("ISSUER_HEADERS"))
+        headers["Content-Type"] = "application/json"
 
         r = requests.post(
-            os.getenv('ISSUER_URL') + '/connections/' + connection_id + '/send-message', 
-            json={
-                "content": "ping"
-            },
-            headers=headers
-            )
+            os.getenv("ISSUER_URL") + "/connections/" + connection_id + "/send-message",
+            json={"content": "ping"},
+            headers=headers,
+        )
         r = r.json()
 
         line = self.readjsonline()
 
         return line
-       
