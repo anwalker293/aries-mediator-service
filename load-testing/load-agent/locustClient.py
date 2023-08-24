@@ -391,7 +391,7 @@ class CustomClient:
                 "Encountered JSONDecodeError while getting the presentation record: ", g
             )
 
-        self.agent.stdout.readline()
+        # self.agent.stdout.readline()
         # line = self.readjsonline()
 
     @stopwatch
