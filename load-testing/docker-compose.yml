@@ -11,6 +11,8 @@ services:
     tty: true
     command: >
       locust -f ${LOCUST_FILES} --master --master-bind-port=8090
+      # Worker: 
+      # locust -f ${LOCUST_FILES} --worker --master-host=${MASTER_HOST} --master-port=8090
     ports:
       - "8089:8089"
       - "8090:8090"
