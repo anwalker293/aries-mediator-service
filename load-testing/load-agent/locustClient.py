@@ -15,10 +15,13 @@ from gevent import lock as gevent_lock
 from uuid import uuid4
 
 SHUTDOWN_TIMEOUT_SECONDS=10
-READ_TIMEOUT_SECONDS=120
+READ_TIMEOUT_SECONDS=120 # stdout feedback
 ERRORS_BEFORE_RESTART=10
+# How long to wait for verified = true state
+VERIFIED_TIMEOUT_SECONDS=os.getenv('VERIFIED_TIMEOUT_SECONDS')
 START_PORT= json.loads(os.getenv('START_PORT'))
 END_PORT= json.loads(os.getenv('END_PORT'))
+
 class PortManager:
     def __init__(self):
         self.lock = gevent_lock.BoundedSemaphore()
@@ -242,19 +245,6 @@ class CustomClient:
         line = self.readjsonline()
         iteration = 0
 
-        
-
-        # while iteration < 5:
-        #     try:
-        #         return line['connection']
-        #     except Exception:
-        #         raise Exception("line is : ", line, " invitation is : ", invite)
-        #         #self.run_command({"cmd":"receiveInvitation", "invitationUrl": invite})
-        #         #line = self.readjsonline()
-        #         #time.sleep(1)
-        #         #iteration += 1
-        #         #raise Exception(line)
-
         return line['connection']
 
     @stopwatch
@@ -301,10 +291,7 @@ class CustomClient:
     def presentation_exchange(self, connection_id):
         self.run_command({"cmd":"presentationExchange"})
 
-        #line = self.readjsonline()
-
         # From verification side
-        # TO DO: Change "issuer" everywhere to more general "ACA-Py"
         headers = json.loads(os.getenv('ISSUER_HEADERS')) # headers same
         headers['Content-Type'] = 'application/json'
 
@@ -312,7 +299,6 @@ class CustomClient:
         schema_parts = os.getenv('SCHEMA').split(':')
 
         # Might need to change nonce
-        # TO DO: Generalize schema parts
         r = requests.post(
             os.getenv('ISSUER_URL') + '/present-proof/send-request', 
             json={
@@ -332,30 +318,37 @@ class CustomClient:
                 "trace": True 
             }, 
             headers=headers)
+        
+        try:
+            if r.status_code != 200:
+                raise Exception("Request was not successful: ", r.content)
+        except JSONDecodeError as e:
+            raise Exception("Encountered JSONDecodeError while parsing the request: ", r)
 
-        if r.status_code != 200:
-            raise Exception("r is ", r.json())
-
-        r = r.json()
+        line = self.readjsonline()
+        #r = r.json()
     
         # Need to get presentation exchange id
-
         pres_ex_id = r['presentation_exchange_id']
-        # Want to do a for loop
-        iteration = 0 
-        while iteration < 5: 
-            g = requests.get(
-                os.getenv('ISSUER_URL') + f'/present-proof/records/{pres_ex_id}',
-                headers=headers
-            )
-            if g.json()['state']!='request_sent' and g.json()['state']!='presentation_received':
-                'request_sent' and g.json()['state']!='presentation_received'
-                break 
-            iteration += 1
-            time.sleep(1)
-        
-        if g.json()['verified']!='true':
-            raise AssertionError(f"Presentation was not successfully verified. Presentation in state {g.json['state']}")
+
+        try:
+            iteration = 0 
+            while iteration < VERIFIED_TIMEOUT_SECONDS: 
+                g = requests.get(
+                    os.getenv('ISSUER_URL') + f'/present-proof/records/{pres_ex_id}',
+                    headers=headers
+                )
+                if g.json()['state']!='request_sent' and g.json()['state']!='presentation_received':
+                    'request_sent' and g.json()['state']!='presentation_received'
+                    break 
+                iteration += 1
+                time.sleep(1)
+            
+            if g.json()['verified']!='true':
+                raise AssertionError(f"Presentation was not successfully verified. Presentation in state {g.json['state']}")
+
+        except JSONDecodeError as e:
+            raise Exception("Encountered JSONDecodeError while getting the presentation record: ", g)
 
         self.agent.stdout.readline()
         #line = self.readjsonline()
