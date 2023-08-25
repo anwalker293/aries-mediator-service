@@ -21,7 +21,7 @@ SHUTDOWN_TIMEOUT_SECONDS = 10
 READ_TIMEOUT_SECONDS = 120  # stdout feedback
 ERRORS_BEFORE_RESTART = 10
 # How long to wait for verified = true state
-VERIFIED_TIMEOUT_SECONDS = os.getenv("VERIFIED_TIMEOUT_SECONDS")
+VERIFIED_TIMEOUT_SECONDS = int(os.getenv("VERIFIED_TIMEOUT_SECONDS", 20))
 START_PORT = json.loads(os.getenv("START_PORT"))
 END_PORT = json.loads(os.getenv("END_PORT"))
 
@@ -361,7 +361,13 @@ class CustomClient:
                 "Encountered JSONDecodeError while parsing the request: ", r
             )
 
+        print("before line")
+        line = self.readjsonline()
+        print("after line")
+        r = r.json()
+        print("after line 2")
         pres_ex_id = r["presentation_exchange_id"]
+        print("pres ex id is ", pres_ex_id)
         # Want to do a for loop
         iteration = 0
         try:
@@ -389,7 +395,6 @@ class CustomClient:
                 "Encountered JSONDecodeError while getting the presentation record: ", g
             )
 
-        line = self.readjsonline()
 
     @stopwatch
     def revoke_credential(self, credential):

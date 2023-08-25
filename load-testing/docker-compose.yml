@@ -11,10 +11,6 @@ services:
     tty: true
     command: >
       locust -f ${LOCUST_FILES} --master --master-bind-port=8090
-      # Worker: 
-      # locust -f ${LOCUST_FILES} --worker --master-host=${MASTER_HOST} --master-port=8090
-      # Unclustered:
-      # locust -f ${LOCUST_FILES}
     ports:
       - "8089:8089"
       - "8090:8090"
@@ -35,7 +31,7 @@ services:
       - LEDGER=${LEDGER}
       - START_PORT=${START_PORT}
       - END_PORT=${END_PORT}
-      - VERIFIED_TIMEOUT_SECONDS=$${VERIFIED_TIMEOUT_SECONDS:-20}
+      - VERIFIED_TIMEOUT_SECONDS=${VERIFIED_TIMEOUT_SECONDS}
     networks:
       - app-network
 
