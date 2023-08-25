@@ -40,7 +40,6 @@ class UserBehaviour(SequentialTaskSet):
         credential = self.client.receive_credential(self.invite["connection_id"])
 
     def on_start(self):
-        # Existing connections
         self.client.startup(withMediation=True)
         self.get_invite()
         self.accept_invite()
@@ -60,6 +59,7 @@ class UserBehaviour(SequentialTaskSet):
 
             restart = False
 
+            # Need connection id
             try:
                 presentation = self.client.presentation_exchange(
                     self.invite["connection_id"]
