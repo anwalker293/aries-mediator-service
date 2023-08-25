@@ -376,12 +376,6 @@ class CustomClient:
             raise Exception("Encountered JSONDecodeError while parsing the request: ", r)
         
         line = self.readjsonline()
-<<<<<<< HEAD
-        # Need to get presentation exchange id
-
-=======
- 
->>>>>>> d9f12230b877169d3c5d89684f88bdb872006c94
         pres_ex_id = r['presentation_exchange_id']
 
         try:
@@ -396,21 +390,7 @@ class CustomClient:
                 raise AssertionError(f"Presentation was not successfully verified. Presentation in state {g.json()['state']}")
         
         except JSONDecodeError as e:
-<<<<<<< HEAD
-            raise Exception("We found it! ", g)
-
-        #self.agent.stdout.readline()
-        # try:
-        #     line2 = self.agent.stdout.readline()
-        # except Exception as e:
-        #     raise AssertionError("error is e ")
-        # #raise AssertionError("line2 is ", line2)
-        # if "JSONDecodeError" in line2:
-        #     raise AssertionError("line 2 is ", line2)
-        #     return line2.json()
-=======
             raise Exception("Encountered JSONDecodeError while getting presentation: ", g)
->>>>>>> d9f12230b877169d3c5d89684f88bdb872006c94
 
     @stopwatch
     def revoke_credential(self, credential):
