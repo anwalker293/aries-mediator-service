@@ -1,7 +1,10 @@
 from locust import events
+from json.decoder import JSONDecodeError
 import time
 import inspect
 import json
+
+from typing import Any, Optional
 
 import fcntl
 import os
@@ -109,7 +112,6 @@ class CustomClient:
                 shell=False,
             )
 
-            # Optional: Can pass in agent wallet configuration
             self.run_command(
                 {
                     "cmd": "start",
@@ -125,7 +127,7 @@ class CustomClient:
 
             # we tried to start the agent and failed
             if self.agent is None or self.agent.poll() is not None:
-                raise Exception("Unable to start")
+                raise Exception("unable to start")
         except Exception as e:
             self.shutdown()
             raise e
@@ -213,17 +215,14 @@ class CustomClient:
                         raise Exception(
                             "An error was encountered while parsing stdout: ", e
                         )
-                    # except JSONDecodeError as e:
-                    #     raise Exception("Received JSONDecodeError. Raw content: ", raw_line_stdout)
                 else:
-                    raise Exception("Read Timeout.")
+                    raise Exception("Read Timeout")
 
             if not line:
                 raise Exception("Invalid read.")
 
             if line["error"] != 0:
                 raise Exception("Error encountered within load testing agent: ", line)
-                # raise Exception(line['result'])
 
             return line
         except Exception as e:
@@ -276,10 +275,12 @@ class CustomClient:
 
     @stopwatch
     def accept_invite(self, invite):
-        self.run_command({"cmd": "receiveInvitation", "invitationUrl": invite})
+        try:
+            self.run_command({"cmd": "receiveInvitation", "invitationUrl": invite})
+        except Exception:
+            self.run_command({"cmd": "receiveInvitation", "invitationUrl": invite})
 
         line = self.readjsonline()
-        iteration = 0
 
         return line["connection"]
 
@@ -334,6 +335,7 @@ class CustomClient:
         schema_parts = os.getenv("SCHEMA").split(":")
 
         # Might need to change nonce
+        # TO DO: Generalize schema parts
         r = requests.post(
             os.getenv("ISSUER_URL") + "/present-proof/send-request",
             json={
@@ -342,7 +344,7 @@ class CustomClient:
                 "connection_id": connection_id,
                 "proof_request": {
                     "name": "PerfScore",
-                    "requested_attributes": {str(uuid4()): {"name": "score"}},
+                    "requested_attributes": {"score": {"name": "score"}},
                     "requested_predicates": {},
                     "version": "1.0",
                 },
@@ -359,14 +361,10 @@ class CustomClient:
                 "Encountered JSONDecodeError while parsing the request: ", r
             )
 
-        line = self.readjsonline()
-        # r = r.json()
-
-        # Need to get presentation exchange id
         pres_ex_id = r["presentation_exchange_id"]
-
+        # Want to do a for loop
+        iteration = 0
         try:
-            iteration = 0
             while iteration < VERIFIED_TIMEOUT_SECONDS:
                 g = requests.get(
                     os.getenv("ISSUER_URL") + f"/present-proof/records/{pres_ex_id}",
@@ -383,7 +381,7 @@ class CustomClient:
 
             if g.json()["verified"] != "true":
                 raise AssertionError(
-                    f"Presentation was not successfully verified. Presentation in state {g.json['state']}"
+                    f"Presentation was not successfully verified. Presentation in state {g.json()['state']}"
                 )
 
         except JSONDecodeError as e:
@@ -391,8 +389,7 @@ class CustomClient:
                 "Encountered JSONDecodeError while getting the presentation record: ", g
             )
 
-        # self.agent.stdout.readline()
-        # line = self.readjsonline()
+        line = self.readjsonline()
 
     @stopwatch
     def revoke_credential(self, credential):
