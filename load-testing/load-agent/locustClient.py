@@ -198,16 +198,20 @@ class CustomClient:
 
     @stopwatch
     def issuer_getinvite(self):
-        headers = json.loads(os.getenv('ISSUER_HEADERS'))
-        headers['Content-Type'] = 'application/json'
+        headers = json.loads(os.getenv("HEADERS"))
+        headers["Content-Type"] = "application/json"
         r = requests.post(
-            os.getenv('ISSUER_URL') + '/connections/create-invitation?auto_accept=true', 
-            json={ "metadata": {}, "my_label": "Test" },
-            headers=headers
-            )
+            os.getenv("ISSUER_URL") + "/api/v1/invitations?auto_accept=true",
+            json={"metadata": {}, "multi_use": "true"},
+            headers=headers,
+            verify=False)
+        try:
+            invitation_url = r.json()["invitation_url"]
+        except Exception:
+            raise Exception("Failed to get invitation url. Request: ", r.json())
         if r.status_code != 200:
             raise Exception(r.content)
-            
+
         r = r.json()
 
         return r
