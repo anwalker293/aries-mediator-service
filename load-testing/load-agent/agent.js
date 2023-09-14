@@ -40,6 +40,7 @@ const initializeAgent = async (withMediation, port) => {
         autoAcceptInvitation: true,
         // logger: new ariesCore.ConsoleLogger(ariesCore.LogLevel.trace),
         mediatorConnectionsInvite: mediation_url,
+	mediatorPickupStrategy: ariesCore.MediatorPickupStrategy.PickUpV2,
     }
 
     if (withMediation) {

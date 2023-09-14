@@ -218,7 +218,7 @@ class CustomClient:
 
     @stopwatch
     def issuer_getliveness(self):
-        headers = json.loads(os.getenv('ISSUER_HEADERS'))
+        headers = json.loads(os.getenv('HEADERS'))
         headers['Content-Type'] = 'application/json'
         r = requests.get(
             os.getenv('ISSUER_URL') + '/status', 
@@ -238,42 +238,34 @@ class CustomClient:
 
         line = self.readjsonline()
 
-        return line['connection']
+        return line["connection"]
 
     @stopwatch
-    def receive_credential(self, connection_id):
+    def receive_credential(self, invitation_id):
         self.run_command({"cmd":"receiveCredential"})
 
-        headers = json.loads(os.getenv('ISSUER_HEADERS'))
+        headers = json.loads(os.getenv('HEADERS'))
         headers['Content-Type'] = 'application/json'
 
         issuer_did = os.getenv('CRED_DEF').split(':')[0]
         schema_parts = os.getenv('SCHEMA').split(':')
-
+        
+        print("invitation Id is ", invitation_id)
 
         r = requests.post(
-            os.getenv('ISSUER_URL') + '/issue-credential/send', 
+            os.getenv('ISSUER_URL') + '/api/v1/credentials', 
             json={
-                "auto_remove": True,
-                "comment": "Performance Issuance",
-                "connection_id": connection_id,
-                "cred_def_id": os.getenv('CRED_DEF'),
-                "credential_proposal": {
-                    "@type": "issue-credential/1.0/credential-preview",
-                    "attributes": json.loads(os.getenv('CRED_ATTR'))
-                },
-                "issuer_did": issuer_did,
+                "invitation_id": invitation_id,
+                "attributes": json.loads(os.getenv('CRED_ATTR')),
                 "schema_id":  os.getenv('SCHEMA'),
-                "schema_issuer_did": schema_parts[0],
-                "schema_name": schema_parts[2],
-                "schema_version": schema_parts[3],
-                "trace": True
             },
-            headers=headers
+            headers=headers,
+            verify=False
             )
         if r.status_code != 200:
             raise Exception(r.content)
-            
+        
+        print("YAY WE GOT IT! R is ", r, " and json is ", r.json())
         r = r.json()
 
         line = self.readjsonline()
