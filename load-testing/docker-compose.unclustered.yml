@@ -1,4 +1,4 @@
-version: '3'
+version: "3"
 services:
   load-agent:
     build:
@@ -8,17 +8,11 @@ services:
     restart: unless-stopped
     user: root
     tty: true
-    command: >
-      # Unclustered
-      locust -f ${LOCUST_FILES}
-      # Clustered (Master):
-      # locust -f ${LOCUST_FILES} --master --master-bind-port=8090
-      # Clustered (Worker):
-      # locust -f ${LOCUST_FILES} --worker --master-host=${MASTER_HOST} --master-port=8090
+    command: locust -f ${LOCUST_FILES}
     ports:
-      - '8089:8089'
-      - '8090:8090'
-      - '${START_PORT}-${END_PORT}:${START_PORT}-${END_PORT}'
+      - "8089:8089"
+      - "8090:8090"
+      - "${START_PORT}-${END_PORT}:${START_PORT}-${END_PORT}"
     environment:
       - NODE_ENV=${NODE_ENV}
       - BROWSER=none # don't open the web browser
