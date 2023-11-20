@@ -249,8 +249,6 @@ class CustomClient:
 
         issuer_did = os.getenv('CRED_DEF').split(':')[0]
         schema_parts = os.getenv('SCHEMA').split(':')
-        
-        print("invitation Id is ", invitation_id)
 
         r = requests.post(
             os.getenv('ISSUER_URL') + '/api/v1/credentials', 
@@ -265,12 +263,11 @@ class CustomClient:
         if r.status_code != 200:
             raise Exception(r.content)
         
-        print("YAY WE GOT IT! R is ", r, " and json is ", r.json())
         r = r.json()
 
         line = self.readjsonline()
 
-        return r
+        return r, line
 
     @stopwatch
     def revoke_credential(self, credential):
