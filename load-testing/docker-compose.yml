@@ -21,7 +21,7 @@ services:
       - LOCUST_MIN_WAIT=${LOCUST_MIN_WAIT} # time between pings
       - LOCUST_MAX_WAIT=${LOCUST_MAX_WAIT} # time between pings
       - ISSUER_URL=${ISSUER_URL}
-      - ISSUER_HEADERS=${ISSUER_HEADERS}
+      - HEADERS=${HEADERS}
       - AGENT_IP=${AGENT_IP}
       - CRED_DEF=${CRED_DEF}
       - CRED_ATTR=${CRED_ATTR}
